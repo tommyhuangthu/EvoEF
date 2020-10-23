@@ -1,6 +1,5 @@
-                           README file for EvoEF
+                           EvoEF Quick Start
 ------------------------------------------------------------------------------
-
 
 What's EvoEF?
 ------------------------------------------------------------------------------
@@ -32,27 +31,35 @@ What EvoEF can do?
 
 Installation
 ------------
-  go to the 'src' directory, and just use:
+  in the EvoEF home directory, run the command:
 
-  g++ -O3 -o EvoEF *.cpp
+  g++ -O3 --fast-math -o EvoEF src/*.cpp
 
-  to build the binary executable program in the 'src' directory.
+  to build the binary executable program EvoEF in the home directory.
+
+  OR:
+
+  directly run:
+  
+  ./build.sh
+
+  if you use a UNIX/Linux environment.
 
 
 Usage
 -----
   o To compute protein stability, you can run:
 
-  EvoEF --command=ComputeStability  --pdb=model.pdb
+  ./EvoEF --command=ComputeStability  --pdb=protein.pdb
 
 
   o To compute protein-protein binding affinity, you can run:
 
-  EvoEF --command=ComputeBinding --pdb=dimer.pdb
+  ./EvoEF --command=ComputeBinding --pdb=complex.pdb
   
   or:
   
-  EvoEF --command=ComputeBinding --split=A,BC --pdb=complex.pdb
+  ./EvoEF --command=ComputeBinding --split=A,BC --pdb=complex.pdb
 
   user should specify how to split the chains into two parts for computing
   the binding affinity. Otherwise EvoEF will output the interaction energy
@@ -60,7 +67,7 @@ Usage
 
   o To repair the structure model and do energy minimization:
 
-  EvoEF --command=RepairStructure --pdb=model.pdb
+  ./EvoEF --command=RepairStructure --pdb=protein.pdb
 
   A new structure model name "model_Repair.pdb" will be built in the 
 directory where you run the command. Running the command successfully 
@@ -69,7 +76,7 @@ In the mutant model, the optimized polar hydrogen coordinates are also shown.
 
   o To build mutation model, you can run:
 
-  EvoEF --command=BuildMutant --pdb=model.pdb --mutant-file=individual_list.txt
+  ./EvoEF --command=BuildMutant --pdb=model.pdb --mutant-file=individual_list.txt
 
   Here, the "individual_list.txt" file shows the mutants that you 
 want to build. It has the following format:
@@ -83,11 +90,16 @@ wild-type amino acid, the second is the identifier of the chain that
 the amino acid is attached to, the number is the position of the amino 
 acid in the chain, and the last alphabet is the amino acid after 
 mutation. Running the command successfully should generate a new 
-structure file named “mod-el_Repair_Model_1.pdb”. In the mutant model, 
+structure file named “model_Repair_Model_1.pdb”. In the mutant model, 
 the optimized polar hydrogen coordinates are also shown.
 
 Update History
 --------------
+  2020/10/22:
+    o Update command 'BuildMutant'. In previous version, only one mutant model 
+      can be built based on a PDB file at a time. This bug has been fixed now!
+      Multiple mutants can be written in the 'individual_list.txt' or the 
+      specified mutation file with the above format.
   2019/05/19:
     o Update the list of supported commands
     o Update the function for computing the binding affinity of the multi-chain
@@ -105,20 +117,20 @@ files via any medium is strictly prohibited.
 
 Disclaimer and Copyright
 ------------------------
-  EvoEF is Copyright (c) 2017-2019 the Yang Zhang Lab, Department of 
-Computational Medicine and Bioinformatics, Medical School, University of Michigan.
+  EvoEF is Copyright (c) 2019 Xiaoqiang Huang (tommyhuangthu@foxmail.com; 
+  xiaoqiah@umich.edu).
 
 
 Bugs report
 -----------------------
-  Please contact to xiaoqiah@umich.edu if you find bugs in EvoEF program, thanks! 
+  Please contact to Dr. Xiaoqiang Huang if you find bugs in EvoEF program, thanks! 
 
 
 References
 ----------
-  If EvoEF is important to your work, please cite:  
+  If EvoEF is useful to your work, please cite:  
 
-[1] Robin Pearce†, Xiaoqiang Huang†, Dani Setiawan, Yang Zhang. EvoDesign: Designing 
+[1] Robin Pearce, Xiaoqiang Huang, Dani Setiawan, Yang Zhang. EvoDesign: Designing 
 Protein–Protein Binding Interactions Using Evolutionary Interface Profiles in 
 Conjunction with an Optimized Physical Energy Function. Journal of Molecular 
 Biology (2019) 431: 2467-2476.

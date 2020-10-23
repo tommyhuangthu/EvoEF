@@ -46,7 +46,7 @@ int EvoEF_help(){
     "                       ::user should input the mutant file (see below)\n"
     "  --split=arg        arg specify how to split chains using one-letter chain identifier\n"
     "                     divided by comma, i.e., AB,C or A,BC\n"
-    "  --mutantfile=arg   arg can have any arbitrary name such as 'mutants.txt'\n"
+    "  --mutant_file=arg  arg can have any arbitrary name such as 'mutants.txt'\n"
     "                     and 'individual_list.txt'. The default mutantfile name is individual_list.txt\n"
     "                     Please see the README file to know more about the file format\n"
     "  --pdb=pdbfile      pdbfile should be a valid pdbfile suffixed with '.pdb'\n"
@@ -609,11 +609,14 @@ int EvoEF_ComputeBindingWithSplittingNew(Structure *pStructure, double *energyTe
 //this function is used to build the structure model of mutations
 int EvoEF_BuildMutant(Structure* pStructure, char* mutantfile, RotamerLib* rotlib, AtomParamsSet* atomParams,ResiTopoSet* resiTopos, char* pdbid){
   FileReader fr;
-  FileReaderCreate(&fr, mutantfile);
+  if(FAILED(FileReaderCreate(&fr, mutantfile))){
+    printf("in file %s line %d, mutant file not found\n",__FILE__,__LINE__);
+    exit(IOError);
+  }
   int mutantcount = FileReaderGetLineCount(&fr);
   if(mutantcount<=0){
-    printf("There is no mutant found in the mutant file\n");
-    return DataNotExistError;
+    printf("in file %s line %d, no mutation found in the mutant file\n",__FILE__,__LINE__);
+    exit(DataNotExistError);
   }
 
   StringArray* mutants = (StringArray*)malloc(sizeof(StringArray)*mutantcount);
@@ -635,26 +638,27 @@ int EvoEF_BuildMutant(Structure* pStructure, char* mutantfile, RotamerLib* rotli
   FileReaderDestroy(&fr);
 
   for(int mutantIndex = 0; mutantIndex < mutantcount; mutantIndex++){
-    //initialize designsites first
-    StructureInitializeDesignSites(pStructure);
+    Structure tempStruct;
+    StructureCreate(&tempStruct);
+    StructureCopy(&tempStruct,pStructure);
     //for each mutant, build the rotamer-tree
-    IntArray mutantArray,rotamersArray;
-    IntArrayCreate(&mutantArray,0);
+    IntArray mutatedArray,rotamersArray;
+    IntArrayCreate(&mutatedArray,0);
     IntArrayCreate(&rotamersArray,0);
-    for(int cycle=0; cycle<StringArrayGetCount(&mutants[mutantIndex]); cycle++){
+    for(int posIndex=0; posIndex<StringArrayGetCount(&mutants[mutantIndex]); posIndex++){
       char mutstr[10];
       char aa1, chn, aa2;
       int posInChain;
-      strcpy(mutstr, StringArrayGet(&mutants[mutantIndex], cycle));
+      strcpy(mutstr, StringArrayGet(&mutants[mutantIndex], posIndex));
       sscanf(mutstr, "%c%c%d%c", &aa1, &chn, &posInChain, &aa2);
       int chainIndex = -1, residueIndex = -1;
       char chainname[MAX_LENGTH_CHAIN_NAME]; chainname[0] = chn; chainname[1] = '\0';
-      StructureFindChain(pStructure, chainname, &chainIndex);
+      StructureFindChain(&tempStruct, chainname, &chainIndex);
       if(chainIndex==-1){
         printf("in file %s function %s() line %d, cannot find mutation %s\n", __FILE__, __FUNCTION__, __LINE__, mutstr);
         exit(ValueError);
       }
-      ChainFindResidueByPosInChain(StructureGetChain(pStructure, chainIndex), posInChain, &residueIndex);
+      ChainFindResidueByPosInChain(StructureGetChain(&tempStruct, chainIndex), posInChain, &residueIndex);
       if(residueIndex==-1){
         printf("in file %s function %s() line %d, cannot find mutation %s\n", __FILE__, __FUNCTION__, __LINE__, mutstr);
         exit(ValueError);
@@ -667,28 +671,28 @@ int EvoEF_BuildMutant(Structure* pStructure, char* mutantfile, RotamerLib* rotli
       // for histidine, the default mutaatype is HSD, we need to add HSE
       StringArrayAppend(&designType, mutaatype); StringArrayAppend(&patchType, "");
       if(aa2=='H'){StringArrayAppend(&designType, "HSE"); StringArrayAppend(&patchType, "");}
-      ProteinSiteBuildMutatedRotamers(pStructure, chainIndex, residueIndex, rotlib, atomParams, resiTopos, &designType, &patchType);
-      IntArrayAppend(&mutantArray, chainIndex);
-      IntArrayAppend(&mutantArray, residueIndex);
+      ProteinSiteBuildMutatedRotamers(&tempStruct, chainIndex, residueIndex, rotlib, atomParams, resiTopos, &designType, &patchType);
+      IntArrayAppend(&mutatedArray, chainIndex);
+      IntArrayAppend(&mutatedArray, residueIndex);
       IntArrayAppend(&rotamersArray,chainIndex);
       IntArrayAppend(&rotamersArray,residueIndex);
       StringArrayDestroy(&designType);
       StringArrayDestroy(&patchType);
     }
 
-    // for each mutant, find the surrounding residues and build the wild-type rotamer-tree
-    for(int ii=0; ii<IntArrayGetLength(&mutantArray); ii+=2){
-      int chainIndex = IntArrayGet(&mutantArray,ii);
-      int resiIndex = IntArrayGet(&mutantArray,ii+1);
-      Residue *pResi1 = ChainGetResidue(StructureGetChain(pStructure, chainIndex), resiIndex);
-      for(int j = 0; j < StructureGetChainCount(pStructure); ++j){
-        Chain* pChain = StructureGetChain(pStructure,j);
+    //build rotamers for surrounding residues
+    for(int ii=0; ii<IntArrayGetLength(&mutatedArray); ii+=2){
+      int chainIndex = IntArrayGet(&mutatedArray,ii);
+      int resiIndex = IntArrayGet(&mutatedArray,ii+1);
+      Residue *pResi1 = ChainGetResidue(StructureGetChain(&tempStruct, chainIndex), resiIndex);
+      for(int j = 0; j < StructureGetChainCount(&tempStruct); ++j){
+        Chain* pChain = StructureGetChain(&tempStruct,j);
         for(int k=0; k<ChainGetResidueCount(pChain); k++){
           Residue* pResi2 = ChainGetResidue(pChain,k);
           if(AtomArrayCalcMinDistance(&pResi1->atoms,&pResi2->atoms)<VDW_DISTANCE_CUTOFF){
             if(pResi2->designSiteType==Type_ResidueDesignType_Fixed){
-              ProteinSiteBuildWildtypeRotamers(pStructure,j,k,rotlib,atomParams,resiTopos);
-              ProteinSiteAddCrystalRotamer(pStructure,j,k,resiTopos);
+              ProteinSiteBuildWildtypeRotamers(&tempStruct,j,k,rotlib,atomParams,resiTopos);
+              ProteinSiteAddCrystalRotamer(&tempStruct,j,k,resiTopos);
               IntArrayAppend(&rotamersArray,j);
               IntArrayAppend(&rotamersArray,k);
             }
@@ -699,32 +703,37 @@ int EvoEF_BuildMutant(Structure* pStructure, char* mutantfile, RotamerLib* rotli
 
     // optimization rotamers sequentially
     printf("EvoEF Building Mutation Model %d, the following sites will be optimized:\n",mutantIndex+1);
-    IntArrayShow(&rotamersArray);
-    printf("\n");
-    for(int cycle=0; cycle<3; cycle++){
+    //IntArrayShow(&rotamersArray);
+    //printf("\n");
+    printf("chnIndex resIndex (both of them starts from zero on the chain)\n");
+    for(int ii=0;ii<IntArrayGetLength(&rotamersArray);ii+=2){
+      printf("%8d %8d\n",IntArrayGet(&rotamersArray,ii),IntArrayGet(&rotamersArray,ii+1));
+    }
+    for(int cycle=0; cycle<10; cycle++){
       printf("optimization cycle %d ...\n",cycle+1);
       for(int ii=0; ii<IntArrayGetLength(&rotamersArray); ii+=2){
         int chainIndex = IntArrayGet(&rotamersArray, ii);
         int resiIndex = IntArrayGet(&rotamersArray, ii+1);
         //ProteinSiteOptimizeRotamer(pStructure, chainIndex, resiIndex);
-        ProteinSiteOptimizeRotamerLocally(pStructure,chainIndex,resiIndex,1.0);
+        ProteinSiteOptimizeRotamerLocally(&tempStruct,chainIndex,resiIndex,1.0);
       }
     }
-    IntArrayDestroy(&mutantArray);
+    IntArrayDestroy(&mutatedArray);
     IntArrayDestroy(&rotamersArray);
     //remember to delete rotamers for previous mutant
-    StructureDeleteRotamers(pStructure);
+    StructureRemoveAllDesignSites(&tempStruct);
 
     char modelfile[MAX_LENGTH_ONE_LINE_IN_FILE+1];
     if(pdbid!=NULL)
-      sprintf(modelfile,"%s_Model_%d.pdb",pdbid,mutantIndex+1);
+      sprintf(modelfile,"%s_Model_%04d.pdb",pdbid,mutantIndex+1);
     else
-      sprintf(modelfile,"EvoEF_Model_%d.pdb",mutantIndex+1);
+      sprintf(modelfile,"EvoEF_Model_%04d.pdb",mutantIndex+1);
     FILE* pf=fopen(modelfile,"w");
     fprintf(pf,"REMARK EvoEF generated pdb file\n");
     fprintf(pf,"REMARK Output generated by EvoEF <BuildMutant>\n");
-    StructureShowInPDBFormat(pStructure,TRUE,pf);
+    StructureShowInPDBFormat(&tempStruct,TRUE,pf);
     fclose(pf);
+    StructureDestroy(&tempStruct);
   }
 
   return Success;
@@ -732,8 +741,7 @@ int EvoEF_BuildMutant(Structure* pStructure, char* mutantfile, RotamerLib* rotli
 
 
 int EvoEF_RepairStructure(Structure* pStructure, RotamerLib* rotlib, AtomParamsSet* atomParams,ResiTopoSet* resiTopos, char* pdbid){
-  StructureInitializeDesignSites(pStructure);
-  for(int cycle=0; cycle<1; cycle++){
+  for(int cycle=0; cycle<3; cycle++){
     printf("EvoEF Repairing PDB: optimization cycle %d ...\n",cycle+1);
     for(int i=0; i<StructureGetChainCount(pStructure); ++i){
       Chain* pChain = StructureGetChain(pStructure, i);
@@ -761,7 +769,7 @@ int EvoEF_RepairStructure(Structure* pStructure, RotamerLib* rotlib, AtomParamsS
           //ProteinSiteOptimizeRotamer(pStructure,i,j);
           ProteinSiteOptimizeRotamerLocally(pStructure,i,j, 1.0);
         }
-        ProteinSiteDeleteRotamers(pStructure,i,j);
+        ProteinSiteRemoveDesignSite(pStructure,i,j);
       }
     }
   }
@@ -808,8 +816,7 @@ int EvoEF_AddHydrogen(Structure* pStructure, char* pdbid){
 
 
 int EvoEF_OptimizeHydrogen(Structure* pStructure, AtomParamsSet* atomParams,ResiTopoSet* resiTopos, char* pdbid){
-  StructureInitializeDesignSites(pStructure);
-  for(int cycle=0; cycle<1; cycle++){
+  for(int cycle=0; cycle<3; cycle++){
     printf("EvoEF Repairing PDB: optimization cycle %d ...\n",cycle+1);
     for(int i=0; i<StructureGetChainCount(pStructure); ++i){
       Chain* pChain = StructureGetChain(pStructure, i);
@@ -820,7 +827,7 @@ int EvoEF_OptimizeHydrogen(Structure* pStructure, AtomParamsSet* atomParams,Resi
           ProteinSiteAddCrystalRotamer(pStructure,i,j,resiTopos);
           ProteinSiteExpandHydroxylRotamers(pStructure,i,j,resiTopos);
           ProteinSiteOptimizeRotamerHBondEnergy(pStructure,i,j);
-          ProteinSiteDeleteRotamers(pStructure,i,j);
+          ProteinSiteRemoveDesignSite(pStructure,i,j);
         }
       }
     }

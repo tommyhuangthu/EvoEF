@@ -32,7 +32,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 typedef struct _Structure{
   char name[MAX_LENGTH_STRUCTURE_NAME+1]; // 11 bytes
   Chain* chains;                          // 4/8 bytes
-  DesignSite ***designSites;              // 4/8 bytes
+  DesignSite *designSites;                // 4/8 bytes
   int chainNum;                           // 4 bytes
   int designSiteCount;                    // 4 bytes
 } Structure;
@@ -50,14 +50,13 @@ int StructureAddChain(Structure* pThis, Chain* newChain);
 int StructureDeleteChain(Structure* pThis, char* chainName);
 int StructureShowInPDBFormat(Structure* pThis, BOOL showHydrogen, FILE* pFile);
 int StructureGetDesignSiteCount(Structure* pThis);
-DesignSite* StructureGetDesignSite(Structure* pThis, int chainIndex, int resiIndex);
+DesignSite* StructureGetDesignSite(Structure* pThis, int index);
+DesignSite* StructureFindDesignSite(Structure* pThis, int chainIndex, int resiIndex);
 int StructureShowAtomParameter(Structure* pStructure);
 
 int ProteinSiteBuildAllRotamers(Structure* pThis, int chainIndex, int resiIndex, RotamerLib* rotlib, AtomParamsSet* atomParams, ResiTopoSet* resiTopos);
-int ProteinSiteDeleteRotamers(Structure* pThis, int chainIndex, int resiIndex);
 int ProteinSiteWriteRotamers(Structure *pStructure, int chainIndex, int resiIndex, const char *rotamerFilePath);
 int StructureGenerateProteinRotamers(Structure* pThis, RotamerLib* rotlib, AtomParamsSet* atomParams, ResiTopoSet* resiTopos);
-int StructureInitializeDesignSites(Structure* pThis);
 int ProteinSiteBuildMutatedRotamers(Structure* pThis, int chainIndex, int resiIndex, RotamerLib* rotlib,AtomParamsSet* atomParams,ResiTopoSet* resiTopos, StringArray *pDesignTypes, StringArray *pPatchTypes);
 
 int ProteinSiteBuildWildtypeRotamers(Structure* pThis, int chainIndex, int resiIndex, RotamerLib* rotlib, AtomParamsSet* atomParams, ResiTopoSet* resiTopos);
@@ -77,7 +76,9 @@ int ProteinRotamerGenerate(Structure* pStructure, AtomParamsSet* pAtomParams,Res
 
 BOOL ProteinSiteCheckClash(Structure *pStructure, int chainIndex, int residueIndex);
 int ProteinSiteBuildFlippedCrystalRotamer(Structure* pStructure, int chainIndex, int resiIndex, ResiTopoSet *pResiTopos);
-int StructureDeleteRotamers(Structure* pThis);
 int ProteinSiteOptimizeRotamerHBondEnergy(Structure *pStructure, int chainIndex, int resiIndex);
 int ProteinSiteOptimizeRotamerLocally(Structure *pStructure, int chainIndex, int resiIndex, double rmsdcutoff);
+int StructureCopy(Structure* pThis, Structure* pOther);
+int StructureRemoveAllDesignSites(Structure* pThis);
+int ProteinSiteRemoveDesignSite(Structure* pThis, int chainIndex, int resiIndex);
 #endif // STRUCTURE_H

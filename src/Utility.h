@@ -31,7 +31,11 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define MAX_LENGTH_ATOM_ACCEPTOR      5
 #define MAX_LENGTH_RESIDUE_NAME       5
 #define MAX_LENGTH_CHAIN_NAME         5
-#define MAX_LENGTH_STRUCTURE_NAME    10
+#define MAX_LENGTH_STRUCTURE_NAME     10
+
+#define MAX_LENGTH_ONE_LINE_IN_FILE  1024
+#define MAX_LENGTH_FILE_NAME         500
+
 
 typedef struct _StringArray{
   char** strings;  //4/8 bytes
@@ -53,7 +57,6 @@ int StringArraySplitString(StringArray* pThis, char* srcStr, char splitter);
 int StringArrayShow(StringArray* pThis);
 
 
-#define MAX_LENGTH_ONE_LINE_IN_FILE 1024
 
 typedef enum _Type_CoordinateFile{
   Type_CoordinateFile_PDB, 

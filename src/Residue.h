@@ -64,6 +64,8 @@ typedef enum _Type_ResidueDesignType{
   Type_ResidueDesignType_Fixed,
   Type_ResidueDesignType_Mutated,
   Type_ResidueDesignType_Rotameric,
+  Type_ResidueDesignType_SmallMol,
+  Type_ResidueDesignType_Catalytic,
 }Type_ResidueDesignType;
 
 typedef struct _Residue{

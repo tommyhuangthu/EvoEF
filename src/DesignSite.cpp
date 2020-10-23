@@ -21,12 +21,16 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 int DesignSiteCreate(DesignSite* pThis){
   pThis->pResidue = NULL;
   RotamerSetCreate(&pThis->rotamers);
+  pThis->chainIndex = -1;
+  pThis->resiIndex = -1;
   return Success;
 }
 int DesignSiteDestroy(DesignSite* pThis){
   pThis->pResidue->designSiteType=Type_ResidueDesignType_Fixed;
   pThis->pResidue = NULL;
   RotamerSetDestroy(&pThis->rotamers);
+  pThis->chainIndex = -1;
+  pThis->resiIndex = -1;
   return Success;
 }
 RotamerSet* DesignSiteGetRotamers(DesignSite* pThis){
@@ -73,3 +77,17 @@ int DesignSiteShowRepresentativeRotamerBondInformation(DesignSite* pThis){
   return Success;
 }
 
+
+int DesignSiteRemoveRotamers(DesignSite* pThis){
+  RotamerSetDestroy(&pThis->rotamers);
+  return RotamerSetCreate(&pThis->rotamers);
+}
+
+
+int DesignSiteCopy(DesignSite* pThis,DesignSite* pOther){
+  pThis->chainIndex=pOther->chainIndex;
+  pThis->resiIndex=pOther->resiIndex;
+  pThis->pResidue=pOther->pResidue;
+  RotamerSetCopy(&pThis->rotamers,&pOther->rotamers);
+  return Success;
+}

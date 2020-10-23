@@ -24,6 +24,8 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 typedef struct _DesignSite{
   RotamerSet rotamers; //20-24 bytes
   Residue* pResidue;   //4-8 bytes
+  int chainIndex;
+  int resiIndex;
 } DesignSite;
 
 int DesignSiteCreate(DesignSite* pThis);
@@ -34,7 +36,10 @@ char* DesignSiteGetResiName(DesignSite* pThis);
 int DesignSiteGetPosInChain(DesignSite* pThis);
 int DesignSiteShow(DesignSite* pThis,FILE* pFile);
 Residue* DesignSiteGetResidue(DesignSite* pThis);
+int DesignSiteRemoveRotamers(DesignSite* pThis);
+
 int DesignSiteShowRepresentativeRotamerAtomParameter(DesignSite* pThis);
 int DesignSiteShowRepresentativeRotamerBondInformation(DesignSite* pThis);
+int DesignSiteCopy(DesignSite* pThis,DesignSite* pOther);
 #endif
 
