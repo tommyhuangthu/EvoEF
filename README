@@ -76,7 +76,7 @@ In the mutant model, the optimized polar hydrogen coordinates are also shown.
 
   o To build mutation model, you can run:
 
-  ./EvoEF --command=BuildMutant --pdb=model.pdb --mutant-file=individual_list.txt
+  ./EvoEF --command=BuildMutant --pdb=model.pdb --mutant_file=individual_list.txt
 
   Here, the "individual_list.txt" file shows the mutants that you 
 want to build. It has the following format:
