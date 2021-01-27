@@ -101,13 +101,13 @@ int ResidueGetPosInChain(Residue* pThis){
 
 int ResidueSetPosInChain(Residue* pThis, int newPosInChain){
   int i;
-  if(newPosInChain < 0){
+  /*if(newPosInChain < 0){
     char usrMsg[MAX_LENGTH_ERR_MSG+1];
     int errorCode = ValueError;
     sprintf(usrMsg, "in file %s function %s() line %d", __FILE__, __FUNCTION__, __LINE__);
     TraceError(usrMsg, errorCode);
     return errorCode;
-  }
+  }*/
   pThis->posInChain = newPosInChain;
   for(i=0;i<ResidueGetAtomCount(pThis);i++){
     Atom* pCurAtom = ResidueGetAtom(pThis, i);
