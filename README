@@ -30,8 +30,8 @@ BuildMutant: build mutation model.
   
 OptimizeHydrogen: optimize hydroxyl hydrogens for Ser, Thr, and Tyr.
 
-<b>Note that EvoEF only works with amino acids and proteins. It cannot handle 
-nucleotides, DNA, RNA, water, and/or other molecules!</b>
+Note that EvoEF only works with amino acids and proteins. It cannot handle 
+nucleotides, DNA, RNA, water, and/or other molecules!
 
 
 Usage suggestions
