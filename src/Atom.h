@@ -30,14 +30,6 @@ typedef enum _Type_AtomPolarity{
   Type_AtomPolarity_NPAromatic
 } Type_AtomPolarity;
 
-typedef enum _Type_AtomHydrogen{
-  Type_AtomHydrogen_PolarH, 
-  Type_AtomHydrogen_NPolarH, 
-  Type_AtomHydrogen_Heavy,
-  Type_AtomHydrogen_United
-} Type_AtomHydrogen;
-
-
 typedef enum _Type_AtomHybridType{
   Type_AtomHybridType_SP3,
   Type_AtomHybridType_SP2,

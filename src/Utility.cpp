@@ -517,7 +517,7 @@ double DoubleArrayInnerProduct(DoubleArray *pThis, DoubleArray *pOther){
     }
     return product;
   }
-  printf("in file %s function %s() line %, two vectors have different dimensions\n",__FILE__, __FUNCTION__, __LINE__);
+  printf("in file %s line %d, two vectors have different dimensions\n",__FILE__, __LINE__);
   return ValueError;
 }
 
@@ -538,7 +538,7 @@ double DoubleArrayNorm(DoubleArray *pThis){
 
 int  DoubleArrayMinus(DoubleArray *pThis, DoubleArray *pOther){
   if(pThis->length != pOther->length){
-    printf("in file %s function %s() line %, two vectors have different dimensions\n",__FILE__, __FUNCTION__, __LINE__);
+    printf("in file %s line %d, two vectors have different dimensions\n",__FILE__, __LINE__);
     return ValueError;
   }
   for(int i = 0; i < pThis->length; i++){

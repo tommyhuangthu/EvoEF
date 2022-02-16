@@ -334,60 +334,6 @@ int VdwRepEnergyAtomAndAtom(Residue* pResi1, Residue* pResi2, Atom *pAtom1, Atom
 }
 
 
-int HBondEnergyAtomAndAtom(Residue *pDonor, Residue *pAcceptor,Atom *atomH, Atom *atomA, double *hbond, double distanceHA,double ratio12,int bondType){
-  if(bondType==12||bondType==13) return Success;
-  if(distanceHA>HBOND_DISTANCE_CUTOFF_MAX) return Success;
-  double energyR=0.0;
-  double ratio = HBOND_OPTIMAL_DISTANCE/distanceHA;
-  double B10 = pow(ratio, 10.0);
-  double A12 = pow(ratio, 12.0);
-  energyR = HBOND_WELL_DEPTH * (5.0 * A12- 6.0 * B10);
-  if(energyR > 0.0) return Success;
-
-  Atom *atomD = ResidueGetAtomByName(pDonor, AtomGetHbDorB(atomH));
-  Atom *atomB = ResidueGetAtomByName(pAcceptor, AtomGetHbDorB(atomA));
-  XYZ xyzDH = XYZDifference(&atomD->xyz, &atomH->xyz);
-  XYZ xyzHA = XYZDifference(&atomH->xyz, &atomA->xyz);
-  XYZ xyzAAB = XYZDifference(&atomA->xyz, &atomB->xyz);
-  double angleTheta = PI-XYZAngle(&xyzDH, &xyzHA);
-  if(RadToDeg(angleTheta)<90.0) return Success;
-  double anglePhi   = PI-XYZAngle(&xyzHA, &xyzAAB);
-  if(RadToDeg(anglePhi)<80.0) return Success;
-
-  double energy = 0.0;
-  if(atomA->hybridType == Type_AtomHybridType_SP3){
-    if(RadToDeg(angleTheta) > 90.0 && RadToDeg(anglePhi) > 90.0){
-      double bestPhi = 120.0;
-      energy = energyR * cos(angleTheta)*cos(angleTheta)*cos(anglePhi-DegToRad(bestPhi))*cos(anglePhi-DegToRad(bestPhi));
-    }
-  }
-  else if(atomA->hybridType == Type_AtomHybridType_SP2){
-    if(RadToDeg(angleTheta) > 90.0 && RadToDeg(anglePhi) > 90.0){
-      Atom *atomB2 = NULL;
-      //double angleChi = PI;
-      //atomB2 =ResidueGetAtomByName(pAcceptor, AtomGetHbB2(atomA));
-      //angleChi = GetTorsionAngle(&atomH->xyz, &atomA->xyz, &atomB->xyz, &atomB2->xyz);
-      double bestPhi = 135.0;
-      energy = energyR * cos(angleTheta)*cos(angleTheta)*cos(anglePhi-DegToRad(bestPhi))*cos(anglePhi-DegToRad(bestPhi));
-    }
-  }
-  // scale the hbond energy by residue buried ratio
-  double hbscale = 1.0;
-  if(atomH->isBBAtom==TRUE && atomA->isBBAtom==TRUE) hbscale=1.0;
-  else hbscale = (1.0 - 0.5) * ratio12 + 0.5;
-  energy*=hbscale;
-  *hbond=energy;
-
-  if(ENERGY_DEBUG_MODE_HBOND && strcmp(AtomGetChainName(atomH),AtomGetChainName(atomA))!=0){
-    printf("AtomH: %1s %4d %3s %4s, AtomA: %1s %4d %3s %4s, dist: %5.2f, theta: %5.1f, phi: %5.1f, ratio12: %4.2f, scale: %4.2f, HB: %5.2f\n", 
-      AtomGetChainName(atomH), AtomGetPosInChain(atomH), ResidueGetName(pDonor), AtomGetName(atomH),
-      AtomGetChainName(atomA), AtomGetPosInChain(atomA), ResidueGetName(pAcceptor), AtomGetName(atomA),
-      distanceHA, RadToDeg(angleTheta),RadToDeg(anglePhi),ratio12, hbscale,energy);
-  }
-  return Success;
-}
-
-
 double HBondEnergyTheta(double angleTheta){
   if(angleTheta < 100){
     return 0.0;
@@ -498,59 +444,6 @@ double HBondEnergyPhiSP3(double anglePhi){
     return 0.0;
   }
 }
-
-int HBondEnergyAtomAndAtomKortemmeModel(Residue *pDonor, Residue *pAcceptor,Atom *atomH, Atom *atomA, double *hbond, double distanceHA,double ratio12,int bondType){
-  if(bondType==12||bondType==13) return Success;
-  if(distanceHA > HBOND_DISTANCE_CUTOFF_MAX) return Success;
-  Atom *atomD = ResidueGetAtomByName(pDonor, AtomGetHbDorB(atomH));
-  Atom *atomB = ResidueGetAtomByName(pAcceptor, AtomGetHbDorB(atomA));
-  XYZ xyzDH = XYZDifference(&atomD->xyz, &atomH->xyz);
-  XYZ xyzHA = XYZDifference(&atomH->xyz, &atomA->xyz);
-  XYZ xyzAAB = XYZDifference(&atomA->xyz, &atomB->xyz);
-  double angleTheta = PI-XYZAngle(&xyzDH, &xyzHA);
-  if(RadToDeg(angleTheta) < 100) return Success;
-  double anglePhi   = PI-XYZAngle(&xyzHA, &xyzAAB);
-  if(RadToDeg(anglePhi) < 80) return Success;
-
-  double ratio = HBOND_OPTIMAL_DISTANCE/distanceHA;
-  double B10 = pow(ratio, 10.0);
-  double A12 = pow(ratio, 12.0);
-  double energyR = (5.0 * A12- 6.0 * B10);
-  if(energyR > 0.0) energyR = 0.0;
-  //double value1=1.0-exp(1.234*(1.912-distanceHA));
-  //double energyR=HBOND_WELL_DEPTH*value1*value1-HBOND_WELL_DEPTH;
-  //if(energyR>0.0) energyR=0.0;
-
-  double energyTheta = HBondEnergyTheta(RadToDeg(angleTheta));
-  double energyPhi = 0.0;
-  if(atomA->hybridType == Type_AtomHybridType_SP3){
-    energyPhi = HBondEnergyPhiSP3(RadToDeg(anglePhi));
-  }
-  else{
-    energyPhi = HBondEnergyPhiSP2(RadToDeg(anglePhi));
-  }
-  // original function is error, we should add angle and restriction to calculate energy
-  double energy = 0.0;
-  if(RadToDeg(angleTheta) >= 100 && RadToDeg(anglePhi) >= 80 && distanceHA < HBOND_DISTANCE_CUTOFF_MAX){
-    energy = 1.0 * energyR + 1.03 * energyTheta + 0.2 * energyPhi;
-  }
-  // scale the hbond energy by residue buried ratio
-  double hbscale = 1.0;
-  if(atomH->isBBAtom==TRUE && atomA->isBBAtom==TRUE) hbscale=1.0;
-  else if(atomH->isBBAtom==FALSE && atomA->isBBAtom==FALSE) hbscale=1.0;
-  else hbscale=1.0;
-  energy*=hbscale;
-  *hbond=energy;
-
-  if(ENERGY_DEBUG_MODE_HBOND && strcmp(AtomGetChainName(atomH),AtomGetChainName(atomA))!=0){
-    printf("AtomH: %1s %4d %3s %4s, AtomA: %1s %4d %3s %4s, dist: %5.2f, theta: %5.1f, phi: %5.1f, ratio12: %4.2f, scale: %4.2f, HB: %5.2f\n", 
-      AtomGetChainName(atomH), AtomGetPosInChain(atomH), ResidueGetName(pDonor), AtomGetName(atomH),
-      AtomGetChainName(atomA), AtomGetPosInChain(atomA), ResidueGetName(pAcceptor), AtomGetName(atomA),
-      distanceHA, RadToDeg(angleTheta),RadToDeg(anglePhi),ratio12, hbscale,energy);
-  }
-  return Success;
-}
-
 
 int HBondEnergyAtomAndAtomNewFunction(Residue *pDonor, Residue *pAcceptor,Atom *atomH, Atom *atomA, double *etotal, double *edist, double *etheta, double *ephi,double distanceHA,double ratio12,int bondType){
   if(bondType==12||bondType==13) return Success;

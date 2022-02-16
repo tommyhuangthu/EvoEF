@@ -56,7 +56,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // FOLDEF parameter
 #define FOLDEF_CLASH_TOLERANCE             0.20
 
-int EnergyTermWeighting(double energyTerms[MAX_EVOEF_ENERGY_TERM_NUM]);
+int EnergyTermWeighting(double *energyTerms);
 
 double CalcResidueBuriedRatio(Residue* pResi1);
 double CalcAverageBuriedRatio(double ratio1, double ratio2);
@@ -69,8 +69,6 @@ int ResidueAndNextResidueInterBondConnectionCheck_charmm19(char *atomOnPreResi, 
 
 int VdwAttEnergyAtomAndAtom(Residue* pResi1, Residue* pResi2, Atom *pAtom1, Atom *pAtom2, double *vdwAtt, double distance, int bondType);
 int VdwRepEnergyAtomAndAtom(Residue* pResi1, Residue* pResi2, Atom *pAtom1, Atom *pAtom2, double *vdwRep, double distance,int bondType);
-int HBondEnergyAtomAndAtom(Residue *pDonor, Residue *pAcceptor,Atom *atomH, Atom *atomA, double *hbond, double distanceHA,double ratio12,int bondType);
-int HBondEnergyAtomAndAtomKortemmeModel(Residue *pDonor, Residue *pAcceptor,Atom *atomH, Atom *atomA, double *hbond, double distanceHA,double ratio12,int bondType);
 int HBondEnergyAtomAndAtomNewFunction(Residue *pDonor, Residue *pAcceptor,Atom *atomH, Atom *atomA, double *etotal, double *edist, double *etheta, double *ephi,double distanceHA,double ratio12,int bondType);
 int ElecEnergyAtomAndAtom(Residue *pResi1, Residue *pResi2,Atom *pAtom1, Atom *pAtom2, double *elec, double distance12,double ratio12,int bondType);
 int LKDesolvationEnergyAtomAndAtom(Residue *pResi1, Residue *pResi2, Atom *pAtom1, Atom *pAtom2, double *energyP, double *energyH, double distance,int bondType);

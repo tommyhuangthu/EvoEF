@@ -22,7 +22,6 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "Structure.h"
 #include "EnergyFunction.h"
 
-
 //FOLDX energy functions
 int FOLDEF_StructureCalculateAtomOccupancy14(Structure* pStructure);
 int FOLDEF_StructureCalculateAtomOccupancy1234(Structure* pStructure);

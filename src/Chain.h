@@ -23,10 +23,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 typedef enum _Type_Chain{
   Type_Chain_Protein, 
-  Type_Chain_SmallMol, 
-  Type_Chain_Nucleotide, 
-  Type_Chain_MetalIon, 
-  Type_Chain_Water
+  Type_Chain_Unknown
 }Type_Chain;
 
 int ChainTypeConvertFromString(char* typeName, Type_Chain* type);
@@ -51,7 +48,6 @@ Residue* ChainGetResidue(Chain* pThis, int index);
 int ChainInsertResidue(Chain* pThis, int index, Residue* pNewResi);
 int ChainRemoveResidue(Chain* pThis, int index);
 int ChainAppendResidue(Chain* pThis, Residue* pNewResi);
-int ChainReadCoordinate(Chain* pThis, char* coordinateFile);
 int ChainCalcAllAtomXYZ(Chain* pThis, ResiTopoSet* topos);
 int ChainShowInPDBFormat(Chain* pThis, int resiIndex, int atomIndex, BOOL showHydrogen, FILE* pFile);
 int ChainFindResidueByPosInChain(Chain* pThis, int posInchain, int *index);

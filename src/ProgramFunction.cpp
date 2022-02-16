@@ -20,47 +20,71 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <string.h>
 #include <ctype.h>
 
-int EvoEF_help(){
+extern int MAX_NUM_OF_RUNS;
+extern double MAX_ALLOWED_PERTURBATION_RMSD;
+extern BOOL FLAG_LOCAL_PERTURBATION;
+
+int EvoEF_PrintHelp(){
   printf(  
-    "Usage: EvoEF [OPTIONS] --pdb=pdbfile\n\n"  
+    "Usage: EvoEF [OPTIONS]\n"
     "EvoEF basic OPTIONS:\n\n"
     "short options:\n"
-    "   -v                print version info of EvoEF\n"
-    "   -h                print help message of EvoEF\n"
+    "   -v                        print version info of EvoEF\n"
+    "   -h                        print help message of EvoEF\n"
     "\nlong options:\n"
-    "   --version         print version info of EvoEF\n"
-    "   --help            print help message of EvoEF\n"  
-    "   --command=arg     choose your computation type:\n"
-    "                     ComputeStability\n"
-    "                     ComputeBinding\n"
-    "                       ::user should specify how to split complex for multichain\n"
-    "                         proteins, i.e., --split=AB,C or --split=A,BC\n"
-    "                     RepairStructure\n"
-    "                     ComputeResiEnergy\n"
-    "                       ::compute interaction between a residue\n"
-    "                         with protein backbone and surrounding residues\n"
-    "                     AddHydrogen\n"
-    "                     OptimizeHydrogen\n"
-    "                     ShowResiComposition\n"
-    "                     BuildMutant\n"
-    "                       ::user should input the mutant file (see below)\n"
-    "  --split=arg        arg specify how to split chains using one-letter chain identifier\n"
-    "                     divided by comma, i.e., AB,C or A,BC\n"
-    "  --mutant_file=arg  arg can have any arbitrary name such as 'mutants.txt'\n"
-    "                     and 'individual_list.txt'. The default mutantfile name is individual_list.txt\n"
-    "                     Please see the README file to know more about the file format\n"
-    "  --pdb=pdbfile      pdbfile should be a valid pdbfile suffixed with '.pdb'\n"
+    "   --version                 print version info of EvoEF\n"
+    "   --help                    print help message of EvoEF\n"
+    "   --command=arg             choose your computation type:\n"
+    "                             ComputeStability\n"
+    "                             ComputeBinding\n"
+    "                               ::user should specify how to split complex for multichain\n"
+    "                                 proteins, i.e., --split=AB,C or --split=A,BC\n"
+    "                             RepairStructure\n"
+    "                             ComputeResiEnergy\n"
+    "                               ::compute interaction between a residue\n"
+    "                                 with protein backbone and surrounding residues\n"
+    "                             AddHydrogen\n"
+    "                             OptimizeHydrogen\n"
+    "                             ShowResiComposition\n"
+    "                             BuildMutant\n"
+    "                               ::user should input the mutant file (see below)\n"
+    "  --split=arg                arg specify how to split chains using one-letter chain identifier\n"
+    "                             divided by comma, i.e., AB,C or A,BC\n"
+    "                             this option applies to the command: ComputeBinding (see above)\n"
+    "  --mutant_file=arg          arg can have any arbitrary name such as 'mutants.txt'\n"
+    "                             and 'individual_list.txt'. The default mutantfile name is individual_list.txt\n"
+    "                             Please see the README file to know more about the file format\n"
+    "                             this option applies to the command: BuildMutant\n"
+    "\n"
+    "  --pdb=pdbfile              pdbfile should be a valid pdbfile suffixed with '.pdb'\n"
+    "                             this is a general option, applies to where an operation is requied on a PDB file\n"
+    "\n"
+    "  --num_of_runs=arg          arg must be an integer (default: 3)\n"
+    "                             this option applies to the following commands:\n"
+    "                             RepairStructure (suggested value: >=3)\n"
+    "                             OptimizeHydrogen (suggested value: >=3)\n"
+    "                             BuildMutant (suggested value: >=10)\n"
+    "\n"
+    "  --perturbation=arg         arg is a float value (default: 1.0)\n"
+    "                             this option applies to the following commands:\n"
+    "                             RepairStructure, BuildMutant\n"
+    "                             Suggestions: if you have a good initial strucuture (without missing sidechains), \n"
+    "                             you can choose to activate this option to allow a local optimization of amino acid\n"
+    "                             sidechain conformations. If your initial structure has a poor sidechain quality \n"
+    "                             (probably it is from a model), you do not have to activate this option, or you can \n"
+    "                             activate this option with a huge value, e.g. 1000.0, to allow a full sidechain optimization\n"
+    "\n"
     );
   return Success;
 }
 
-int EvoEF_version(){
+int EvoEF_PrintVersion(){
   printf("EvoDesign Energy Function (EvoEF) version 1.1\n");
   return Success;
 }
 
 
-int EvoEF_interface(){
+int EvoEF_PrintAdertisement(){
   printf("******************************************************\n");
   printf("*              EvoDesign Energy Function             *\n");
   printf("*                                                    *\n");
@@ -320,12 +344,12 @@ int EvoEF_ComputeStabilityForSelectedChains(Structure *pStructure, double *energ
 
 int EvoEF_ComputeBinding(Structure *pStructure, double *energyTerms){
   if(StructureGetChainCount(pStructure)>2){
-    printf("Your structure has more than two protein chains, and you should specify how to split chains "
+    printf("Your structure has >2 protein chains, and you should specify how to split chains "
       "before computing the binding energy\n");
     printf("Otherwise, EvoEF just output the interactions between any chain pair (DEFAULT)\n");
   }
   else if(StructureGetChainCount(pStructure)<=1){
-    printf("Your structure has less than or equal to one chain, binding energy cannot be calculated\n");
+    printf("Your structure has <=1 protein chain, binding energy cannot be calculated\n");
     return Warning;
   }
 
@@ -350,7 +374,7 @@ int EvoEF_ComputeBinding(Structure *pStructure, double *energyTerms){
       }
       // energy terms are weighted during the calculation, don't weight them for the difference
       printf("Binding energy details between chain(s) %s and chain(s) %s:\n",
-        ChainGetName(pChainI),ChainGetName(pChainK),ChainGetName(pChainI),ChainGetName(pChainK));
+        ChainGetName(pChainI),ChainGetName(pChainK));
       printf("reference_ALA         =            %8.2f\n", energyTermsStructure[21]);
       printf("reference_CYS         =            %8.2f\n", energyTermsStructure[22]);
       printf("reference_ASP         =            %8.2f\n", energyTermsStructure[23]);
@@ -668,7 +692,7 @@ int EvoEF_BuildMutant(Structure* pStructure, char* mutantfile, RotamerLib* rotli
       StringArray designType, patchType;
       StringArrayCreate(&designType);
       StringArrayCreate(&patchType);
-      // for histidine, the default mutaatype is HSD, we need to add HSE
+      // for histidine, the default mutAAtype is HSD, we need to add HSE
       StringArrayAppend(&designType, mutaatype); StringArrayAppend(&patchType, "");
       if(aa2=='H'){StringArrayAppend(&designType, "HSE"); StringArrayAppend(&patchType, "");}
       ProteinSiteBuildMutatedRotamers(&tempStruct, chainIndex, residueIndex, rotlib, atomParams, resiTopos, &designType, &patchType);
@@ -709,13 +733,19 @@ int EvoEF_BuildMutant(Structure* pStructure, char* mutantfile, RotamerLib* rotli
     for(int ii=0;ii<IntArrayGetLength(&rotamersArray);ii+=2){
       printf("%8d %8d\n",IntArrayGet(&rotamersArray,ii),IntArrayGet(&rotamersArray,ii+1));
     }
-    for(int cycle=0; cycle<10; cycle++){
-      printf("optimization cycle %d ...\n",cycle+1);
+    for(int run=0; run<MAX_NUM_OF_RUNS; run++){
+      printf("optimization run %d ...\n",run+1);
       for(int ii=0; ii<IntArrayGetLength(&rotamersArray); ii+=2){
-        int chainIndex = IntArrayGet(&rotamersArray, ii);
-        int resiIndex = IntArrayGet(&rotamersArray, ii+1);
-        //ProteinSiteOptimizeRotamer(pStructure, chainIndex, resiIndex);
-        ProteinSiteOptimizeRotamerLocally(&tempStruct,chainIndex,resiIndex,1.0);
+        int chnNdx = IntArrayGet(&rotamersArray, ii);
+        int resNdx = IntArrayGet(&rotamersArray, ii+1);
+        if (FLAG_LOCAL_PERTURBATION) 
+        {
+          ProteinSiteOptimizeRotamerLocally(&tempStruct,chnNdx,resNdx,MAX_ALLOWED_PERTURBATION_RMSD);
+        }
+        else
+        {
+          ProteinSiteOptimizeRotamer(pStructure, chnNdx, resNdx);
+        }
       }
     }
     IntArrayDestroy(&mutatedArray);
@@ -739,15 +769,185 @@ int EvoEF_BuildMutant(Structure* pStructure, char* mutantfile, RotamerLib* rotli
   return Success;
 }
 
+int EvoEF_BuildMutant2(Structure* pStructure, char* mutantfile, RotamerLib* rotlib, AtomParamsSet* atomParams, ResiTopoSet* resiTopos, char* pdbid) {
+  FileReader fr;
+  if (FAILED(FileReaderCreate(&fr, mutantfile))) {
+    printf("in file %s line %d, mutant file not found\n", __FILE__, __LINE__);
+    exit(IOError);
+  }
+  int mutantcount = FileReaderGetLineCount(&fr);
+  if (mutantcount <= 0) {
+    printf("in file %s line %d, no mutation found in the mutant file\n", __FILE__, __LINE__);
+    exit(DataNotExistError);
+  }
+
+  StringArray* mutants = (StringArray*)malloc(sizeof(StringArray) * mutantcount);
+  char line[MAX_LENGTH_ONE_LINE_IN_FILE + 1];
+  int mutantIndex = 0;
+  while (!FAILED(FileReaderGetNextLine(&fr, line))) {
+    StringArrayCreate(&mutants[mutantIndex]);
+    StringArraySplitString(&mutants[mutantIndex], line, ',');
+    char lastMutant[MAX_LENGTH_ONE_LINE_IN_FILE + 1];
+    int lastmutindex = StringArrayGetCount(&mutants[mutantIndex]) - 1;
+    strcpy(lastMutant, StringArrayGet(&mutants[mutantIndex], lastmutindex));
+    //deal with the last char of the last single mutant
+    if ((!isdigit(lastMutant[strlen(lastMutant) - 1])) && !isalpha(lastMutant[strlen(lastMutant) - 1])) {
+      lastMutant[strlen(lastMutant) - 1] = '\0';
+    }
+    StringArraySet(&mutants[mutantIndex], lastmutindex, lastMutant);
+    mutantIndex++;
+  }
+  FileReaderDestroy(&fr);
+
+  for (int mutNdx = 0; mutNdx < mutantcount; mutNdx++) {
+    Structure tempStruct;
+    StructureCreate(&tempStruct);
+    StructureCopy(&tempStruct, pStructure);
+    Structure tempStruct2;
+    StructureCreate(&tempStruct2);
+    StructureCopy(&tempStruct2, pStructure);
+    //for each mutant, build the rotamer-tree
+    IntArray mutatedArray, rotamersArray;
+    IntArrayCreate(&mutatedArray, 0);
+    IntArrayCreate(&rotamersArray, 0);
+    for (int posIndex = 0; posIndex < StringArrayGetCount(&mutants[mutNdx]); posIndex++) {
+      char mutstr[10];
+      char aa1, chn, aa2;
+      int posInChain;
+      strcpy(mutstr, StringArrayGet(&mutants[mutNdx], posIndex));
+      sscanf(mutstr, "%c%c%d%c", &aa1, &chn, &posInChain, &aa2);
+      int chnNdx = -1, resNdx = -1;
+      char chainname[MAX_LENGTH_CHAIN_NAME]; chainname[0] = chn; chainname[1] = '\0';
+      StructureFindChain(&tempStruct, chainname, &chnNdx);
+      if (chnNdx == -1) {
+        printf("in file %s function %s() line %d, cannot find mutation %s\n", __FILE__, __FUNCTION__, __LINE__, mutstr);
+        exit(ValueError);
+      }
+      ChainFindResidueByPosInChain(StructureGetChain(&tempStruct, chnNdx), posInChain, &resNdx);
+      if (resNdx == -1) {
+        printf("in file %s function %s() line %d, cannot find mutation %s\n", __FILE__, __FUNCTION__, __LINE__, mutstr);
+        exit(ValueError);
+      }
+      char mutAAtype[MAX_LENGTH_RESIDUE_NAME];
+      OneLetterAAToThreeLetterAA(aa2, mutAAtype);
+      StringArray mutRotType, mutPatch;
+      StringArrayCreate(&mutRotType);
+      StringArrayCreate(&mutPatch);
+      StringArrayAppend(&mutRotType, mutAAtype); StringArrayAppend(&mutPatch, "");
+      // for histidine, the default mutAAtype is HSD, we need to add HSE
+      if (aa2 == 'H') { StringArrayAppend(&mutRotType, "HSE"); StringArrayAppend(&mutPatch, ""); }
+      ProteinSiteBuildMutatedRotamers(&tempStruct, chnNdx, resNdx, rotlib, atomParams, resiTopos, &mutRotType, &mutPatch);
+      StringArrayDestroy(&mutRotType);
+      StringArrayDestroy(&mutPatch);
+
+      IntArrayAppend(&mutatedArray, chnNdx);
+      IntArrayAppend(&mutatedArray, resNdx);
+      IntArrayAppend(&rotamersArray, chnNdx);
+      IntArrayAppend(&rotamersArray, resNdx);
+
+      // create a reference model for the wild-type
+      StringArray wtRotType, wtPatch;
+      StringArrayCreate(&wtRotType);
+      StringArrayCreate(&wtPatch);
+      char wtAAType[MAX_LENGTH_RESIDUE_NAME];
+      OneLetterAAToThreeLetterAA(aa1, wtAAType);
+      StringArrayAppend(&wtRotType, wtAAType);
+      StringArrayAppend(&wtPatch, "");
+      ProteinSiteBuildMutatedRotamers(&tempStruct2, chnNdx, resNdx, rotlib, atomParams, resiTopos, &wtRotType, &wtPatch);
+      StringArrayDestroy(&mutRotType);
+      StringArrayDestroy(&mutPatch);
+    }
+
+    //build rotamers for surrounding residues
+    for (int ii = 0; ii < IntArrayGetLength(&mutatedArray); ii += 2) {
+      int chainIndex = IntArrayGet(&mutatedArray, ii);
+      int resiIndex = IntArrayGet(&mutatedArray, ii + 1);
+      Residue* pResi1 = ChainGetResidue(StructureGetChain(&tempStruct, chainIndex), resiIndex);
+      for (int j = 0; j < StructureGetChainCount(&tempStruct); ++j) {
+        Chain* pChain = StructureGetChain(&tempStruct, j);
+        for (int k = 0; k < ChainGetResidueCount(pChain); k++) {
+          Residue* pResi2 = ChainGetResidue(pChain, k);
+          if (AtomArrayCalcMinDistance(&pResi1->atoms, &pResi2->atoms) < VDW_DISTANCE_CUTOFF) {
+            if (pResi2->designSiteType == Type_ResidueDesignType_Fixed) {
+              ProteinSiteBuildWildtypeRotamers(&tempStruct, j, k, rotlib, atomParams, resiTopos);
+              ProteinSiteBuildWildtypeRotamers(&tempStruct2, j, k, rotlib, atomParams, resiTopos);
+              ProteinSiteAddCrystalRotamer(&tempStruct, j, k, resiTopos);
+              ProteinSiteAddCrystalRotamer(&tempStruct2, j, k, resiTopos);
+              IntArrayAppend(&rotamersArray, j);
+              IntArrayAppend(&rotamersArray, k);
+            }
+          }
+        }
+      }
+    }
+
+    // optimization rotamers sequentially
+    printf("EvoEF Building Mutation Model %d, the following sites will be optimized:\n", mutNdx + 1);
+    printf("chnIndex resIndex (both of them starts from zero on the chain)\n");
+    for (int ii = 0;ii < IntArrayGetLength(&rotamersArray);ii += 2) {
+      printf("%8d %8d\n", IntArrayGet(&rotamersArray, ii), IntArrayGet(&rotamersArray, ii + 1));
+    }
+    for (int run = 0; run < MAX_NUM_OF_RUNS; run++) {
+      printf("optimization run %d ...\n", run + 1);
+      for (int ii = 0; ii < IntArrayGetLength(&rotamersArray); ii += 2) {
+        int chnNdx = IntArrayGet(&rotamersArray, ii);
+        int resNdx = IntArrayGet(&rotamersArray, ii + 1);
+        if (FLAG_LOCAL_PERTURBATION)
+        {
+          ProteinSiteOptimizeRotamerLocally(&tempStruct, chnNdx, resNdx, MAX_ALLOWED_PERTURBATION_RMSD);
+          ProteinSiteOptimizeRotamerLocally(&tempStruct2, chnNdx, resNdx, MAX_ALLOWED_PERTURBATION_RMSD);
+        }
+        else
+        {
+          ProteinSiteOptimizeRotamer(&tempStruct, chnNdx, resNdx);
+          ProteinSiteOptimizeRotamer(&tempStruct2, chnNdx, resNdx);
+        }
+      }
+    }
+    IntArrayDestroy(&mutatedArray);
+    IntArrayDestroy(&rotamersArray);
+
+    //remember to delete rotamers for previous mutant
+    StructureRemoveAllDesignSites(&tempStruct);
+    StructureRemoveAllDesignSites(&tempStruct2);
+
+    // finally, write the mutant and reference WT model into files
+    char modFile[MAX_LENGTH_ONE_LINE_IN_FILE + 1];
+    char WTModFile[MAX_LENGTH_ONE_LINE_IN_FILE + 1];
+    if (pdbid != NULL) {
+      sprintf(modFile, "%s_Model_%04d.pdb", pdbid, mutNdx + 1);
+      sprintf(WTModFile, "%s_Model_%04d_WT.pdb", pdbid, mutNdx + 1);
+    }
+    else {
+      sprintf(modFile, "Model_%04d.pdb", mutNdx + 1);
+      sprintf(WTModFile, "Model_%04d_WT.pdb", mutNdx + 1);
+    }
+    FILE* pFile = fopen(modFile, "w");
+    fprintf(pFile, "REMARK file generated by EvoEF module <BuildMutant> with backbone-independent rotlib\n");
+    StructureShowInPDBFormat(&tempStruct, TRUE, pFile);
+    fclose(pFile);
+
+    pFile = fopen(WTModFile, "w");
+    fprintf(pFile, "REMARK file generated by EvoEF module <BuildMutant> with backbone-independent rotlib\n");
+    StructureShowInPDBFormat(&tempStruct2, TRUE, pFile);
+    fclose(pFile);
+
+    StructureDestroy(&tempStruct);
+    StructureDestroy(&tempStruct2);
+  }
+
+  return Success;
+}
+
 
 int EvoEF_RepairStructure(Structure* pStructure, RotamerLib* rotlib, AtomParamsSet* atomParams,ResiTopoSet* resiTopos, char* pdbid){
-  for(int cycle=0; cycle<3; cycle++){
-    printf("EvoEF Repairing PDB: optimization cycle %d ...\n",cycle+1);
+  for(int run=0; run<MAX_NUM_OF_RUNS; run++){
+    printf("EvoEF reparing structure, run %d ...\n",run+1);
     for(int i=0; i<StructureGetChainCount(pStructure); ++i){
       Chain* pChain = StructureGetChain(pStructure, i);
       for(int j=0; j<ChainGetResidueCount(pChain); j++){
         Residue* pResi = ChainGetResidue(pChain, j);
-        //skip CYS which may form disulfide bonds
+        //skip CYS residues because they may form disulfide bonds
         if(strcmp(ResidueGetName(pResi),"CYS")==0) continue;
         if(strcmp(ResidueGetName(pResi),"ASN")==0||strcmp(ResidueGetName(pResi),"GLN")==0||strcmp(ResidueGetName(pResi),"HSD")==0||strcmp(ResidueGetName(pResi),"HSE")==0){
           printf("Flip residue %s%d%c to optimize hbond\n", ResidueGetChainName(pResi),ResidueGetPosInChain(pResi),ThreeLetterAAToOneLetterAA(ResidueGetName(pResi)));
@@ -766,8 +966,14 @@ int EvoEF_RepairStructure(Structure* pStructure, RotamerLib* rotlib, AtomParamsS
           ProteinSiteBuildWildtypeRotamers(pStructure,i,j,rotlib,atomParams,resiTopos);
           ProteinSiteAddCrystalRotamer(pStructure,i,j,resiTopos);
           ProteinSiteExpandHydroxylRotamers(pStructure,i,j,resiTopos);
-          //ProteinSiteOptimizeRotamer(pStructure,i,j);
-          ProteinSiteOptimizeRotamerLocally(pStructure,i,j, 1.0);
+          if (FLAG_LOCAL_PERTURBATION)
+          {
+            ProteinSiteOptimizeRotamerLocally(pStructure, i, j, MAX_ALLOWED_PERTURBATION_RMSD);
+          }
+          else
+          {
+            ProteinSiteOptimizeRotamer(pStructure, i, j);
+          }
         }
         ProteinSiteRemoveDesignSite(pStructure,i,j);
       }
@@ -801,14 +1007,15 @@ int EvoEF_WriteStructureToFile(Structure* pStructure, char* pdbfile){
   return Success;
 }
 
-int EvoEF_AddHydrogen(Structure* pStructure, char* pdbid){
-  //polar hydrogens are automatically added, so we just output the repaired structure
+int EvoEF_AddPolarHydrogen(Structure* pStructure, char* pdbid){
+  // polar hydrogens are automatically added, and this function writes the complete structure
+  // with standard hydrogen topologies without optimizing their coordinates
   char modelfile[MAX_LENGTH_ONE_LINE_IN_FILE+1];
-  if(pdbid!=NULL){sprintf(modelfile,"%s_PolH.pdb",pdbid);}
-  else{strcpy(modelfile,"EvoEF_PolH.pdb");}
+  if(pdbid!=NULL){sprintf(modelfile,"%s_PolarH.pdb",pdbid);}
+  else{strcpy(modelfile,"EvoEF_PolarH.pdb");}
   FILE* pf=fopen(modelfile,"w");
   fprintf(pf,"REMARK EvoEF generated pdb file\n");
-  fprintf(pf,"REMARK Output generated by EvoEF <AddHydrogen>\n");
+  fprintf(pf,"REMARK Output generated by EvoEF <AddPolarHydrogen>\n");
   StructureShowInPDBFormat(pStructure,TRUE,pf);
   fclose(pf);
   return Success;
@@ -816,8 +1023,8 @@ int EvoEF_AddHydrogen(Structure* pStructure, char* pdbid){
 
 
 int EvoEF_OptimizeHydrogen(Structure* pStructure, AtomParamsSet* atomParams,ResiTopoSet* resiTopos, char* pdbid){
-  for(int cycle=0; cycle<3; cycle++){
-    printf("EvoEF Repairing PDB: optimization cycle %d ...\n",cycle+1);
+  for(int run=0; run<MAX_NUM_OF_RUNS; run++){
+    printf("EvoEF optimizes rotatable hydrogens: run %d ...\n",run+1);
     for(int i=0; i<StructureGetChainCount(pStructure); ++i){
       Chain* pChain = StructureGetChain(pStructure, i);
       for(int j=0; j<ChainGetResidueCount(pChain); j++){

@@ -24,17 +24,18 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "EnergyComputation.h"
 
 
-int EvoEF_help();
-int EvoEF_version();
-int EvoEF_interface();
+int EvoEF_PrintHelp();
+int EvoEF_PrintVersion();
+int EvoEF_PrintAdertisement();
 BOOL CheckCommandName(char* queryname);
 
 int EvoEF_ComputeStability(Structure *pStructure, double *energyTerms);
 int EvoEF_ComputeBinding(Structure *pStructure, double *energyTerms);
 int EvoEF_BuildMutant(Structure* pStructure, char* mutantfile, RotamerLib* rotlib, AtomParamsSet* atomParams,ResiTopoSet* resiTopos, char* pdbid);
+int EvoEF_BuildMutant2(Structure* pStructure, char* mutantfile, RotamerLib* rotlib, AtomParamsSet* atomParams, ResiTopoSet* resiTopos, char* pdbid);
 int EvoEF_RepairStructure(Structure* pStructure, RotamerLib* rotlib, AtomParamsSet* atomParams,ResiTopoSet* resiTopos, char* pdbid);
 int EvoEF_WriteStructureToFile(Structure* pStructure, char* pdbfile);
-int EvoEF_AddHydrogen(Structure* pStructure, char* pdbid);
+int EvoEF_AddPolarHydrogen(Structure* pStructure, char* pdbid);
 int EvoEF_OptimizeHydrogen(Structure* pStructure, AtomParamsSet* atomParams,ResiTopoSet* resiTopos, char* pdbid);
 int EvoEF_ComputeBindingWithSplitting(Structure *pStructure, double *energyTerms,char split1[], char split2[]);
 int EvoEF_ComputeBindingWithSplittingNew(Structure *pStructure, double *energyTerms,char split1[], char split2[]);

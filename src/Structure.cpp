@@ -93,19 +93,6 @@ int StructureFindChain(Structure* pThis, char* chainName, int* index){
   }
   return DataNotExistError;
 }
-int StructureFindSmallMol(Structure* pThis, Residue** ppSmallMol){
-  int result = DataNotExistError;
-  for(int i=0;i<pThis->chainNum;i++){
-    if(pThis->chains[i].type == Type_Chain_SmallMol){
-      *ppSmallMol = ChainGetResidue(&pThis->chains[i], 0);
-      if(*ppSmallMol != NULL){
-        result = Success;
-        break;
-      } 
-    }
-  }
-  return result;
-}
 
 int StructureAddChain(Structure* pThis, Chain* newChain){
   int index = -1;
@@ -220,13 +207,13 @@ int StructureInitialize(Structure* pStructure, char* pdbFile, AtomParamsSet* pAt
     }
     // new chain
     if(strcmp(initChainID, strChainID) != 0){
-      strcpy(initChainID, strChainID);
       Chain newChain;
-      Type_Chain chainType;
       ChainCreate(&newChain);
-      chainType = ChainTypeIdentifiedFromResidueName(strResName);
+      Type_Chain chainType = ChainTypeIdentifiedFromResidueName(strResName);
+      if (chainType == Type_Chain_Unknown) continue;
       ChainSetType(&newChain, chainType);
       ChainSetName(&newChain, strChainID);
+      strcpy(initChainID, strChainID);
       StructureAddChain(pStructure, &newChain);
       ChainDestroy(&newChain);
       FileReaderSetCurrentPos(&file, FileReaderGetCurrentPos(&file)-1);
@@ -236,9 +223,11 @@ int StructureInitialize(Structure* pStructure, char* pdbFile, AtomParamsSet* pAt
     else{
       // new residue
       if(strcmp(initResPos, strResPos) != 0){
+        Type_Chain chainType = ChainTypeIdentifiedFromResidueName(strResName);
+        if (chainType == Type_Chain_Unknown) continue;
+        if (strcmp(strResName, "HIS") == 0) strcpy(strResName, "HSD");
         Residue newResi;
         ResidueCreate(&newResi);
-        if(strcmp(strResName, "HIS")==0) strcpy(strResName, "HSD");
         ResidueSetName(&newResi, strResName);
         ResidueSetPosInChain(&newResi, atoi(strResPos));
         ResidueAddAtomsFromAtomParams(&newResi, pAtomParams);
@@ -1662,7 +1651,7 @@ int ProteinSiteOptimizeRotamerHBondEnergy(Structure *pStructure, int chainIndex,
   double *energyArrayOfRotamers = (double *)malloc(sizeof(double)*RotamerSetGetCount(pRotSet));
   for(int i=0; i<RotamerSetGetCount(pRotSet); ++i) energyArrayOfRotamers[i]=0.0;
 
-  //step 1: find out residues within 5 angstroms to the design site of interest;
+  //step 1: find out residues within ~~ angstroms to the design site of interest;
   int surroundingResiNum = 0;
   Residue **ppSurroundingResidues = NULL;
   for(int i = 0; i < pStructure->chainNum; i++){
@@ -1792,14 +1781,9 @@ int ProteinSiteOptimizeRotamerHBondEnergy(Structure *pStructure, int chainIndex,
 
 
     EnergyTermWeighting(energyTerms);
-    //only consider the hbond energy
-    for(int i = 11; i <= 19; i++){
+    for (int i = 0; i < MAX_EVOEF_ENERGY_TERM_NUM; i++) {
       energyArrayOfRotamers[ir] += energyTerms[i];
     }
-    for(int i = 41; i <= 49; i++){
-      energyArrayOfRotamers[ir] += energyTerms[i];
-    }
-
     if(energyArrayOfRotamers[ir] < minEnergy){
       minEnergy = energyArrayOfRotamers[ir];
       minEnergyRotIndex = ir;

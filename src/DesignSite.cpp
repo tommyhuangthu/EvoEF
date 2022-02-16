@@ -25,6 +25,7 @@ int DesignSiteCreate(DesignSite* pThis){
   pThis->resiIndex = -1;
   return Success;
 }
+
 int DesignSiteDestroy(DesignSite* pThis){
   pThis->pResidue->designSiteType=Type_ResidueDesignType_Fixed;
   pThis->pResidue = NULL;
@@ -33,14 +34,15 @@ int DesignSiteDestroy(DesignSite* pThis){
   pThis->resiIndex = -1;
   return Success;
 }
+
 RotamerSet* DesignSiteGetRotamers(DesignSite* pThis){
   return &pThis->rotamers;
 }
+
 int DesignSiteShow(DesignSite* pThis,FILE* pFile){
   printf("Chain %s residue %s %d has %d rotamers\n",ResidueGetChainName(pThis->pResidue),ResidueGetName(pThis->pResidue),ResidueGetPosInChain(pThis->pResidue),RotamerSetGetCount(&pThis->rotamers));
   return Success;
 }
-
 
 char* DesignSiteGetChainName(DesignSite* pThis){
   return pThis->pResidue->chainName;
@@ -66,7 +68,6 @@ int DesignSiteShowRepresentativeRotamerAtomParameter(DesignSite* pThis){
   return Success;
 }
 
-
 int DesignSiteShowRepresentativeRotamerBondInformation(DesignSite* pThis){
   RotamerSet* pSet = DesignSiteGetRotamers(pThis);
   for(int i=0; i<RotamerSetGetRepresentativeCount(pSet); ++i){
@@ -77,12 +78,10 @@ int DesignSiteShowRepresentativeRotamerBondInformation(DesignSite* pThis){
   return Success;
 }
 
-
 int DesignSiteRemoveRotamers(DesignSite* pThis){
   RotamerSetDestroy(&pThis->rotamers);
   return RotamerSetCreate(&pThis->rotamers);
 }
-
 
 int DesignSiteCopy(DesignSite* pThis,DesignSite* pOther){
   pThis->chainIndex=pOther->chainIndex;

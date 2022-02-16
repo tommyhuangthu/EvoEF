@@ -113,158 +113,6 @@ BOOL AtomIsHydrogen(Atom* pThis)
   }
 }
 
-//int AtomSetParamsByStringArray(Atom* pThis, StringArray* pParams)
-//{
-//  char* atomName;
-//  char* atomType;
-//  char* isBB;
-//  char* polar;
-//  double epsilon;
-//  double rmin;
-//  double charge;
-//  char* donor;
-//  char* acceptor;
-//  char* hybrid;
-//
-//  if(StringArrayGetCount(pParams)!=11)
-//  {
-//    return ValueError;
-//  }
-//
-//  atomName = StringArrayGet(pParams, 1);
-//  atomType = StringArrayGet(pParams, 2);
-//  isBB     = StringArrayGet(pParams, 3);
-//  polar    = StringArrayGet(pParams, 4);
-//  epsilon  = atof(StringArrayGet(pParams, 5));
-//  rmin     = atof(StringArrayGet(pParams, 6));
-//  charge   = atof(StringArrayGet(pParams, 7));
-//  donor    = StringArrayGet(pParams, 8);
-//  acceptor = StringArrayGet(pParams, 9);
-//  hybrid   = StringArrayGet(pParams, 10);
-//
-//  if( strlen(atomName) > MAX_LENGTH_ATOM_NAME ||
-//    strlen(atomType) > MAX_LENGTH_ATOM_TYPE ||
-//    strlen(donor)    > MAX_LENGTH_ATOM_DONOR ||
-//    strlen(acceptor) > MAX_LENGTH_ATOM_ACCEPTOR)
-//  {
-//    return ValueError;
-//  }
-//
-//  pThis->CHARMM22_epsilon = epsilon;
-//  pThis->CHARMM22_radius = rmin;
-//  pThis->CHARMM22_charge = charge;
-//
-//  //AtomSetName(pThis, atomName);
-//  strcpy(pThis->name, atomName);
-//  strcpy(pThis->type, atomType);
-//
-//  if(strcmp(donor, "Y") == 0)
-//  {
-//    pThis->isHBatomH = TRUE;
-//  }
-//  else
-//  {
-//    pThis->isHBatomH = FALSE;
-//  }
-//  
-//  if(strcmp(acceptor, "Y") == 0)
-//  {
-//    pThis->isHBatomA = TRUE;
-//  }
-//  else
-//  {
-//    pThis->isHBatomA = FALSE;
-//  }
-//
-//  strcpy(pThis->donor, donor);
-//  strcpy(pThis->acceptor, acceptor);
-//  //strcpy(pThis->hybridType, hybrid);
-//  
-//
-//  if(strcmp(hybrid,"SP2") == 0)
-//  {
-//    pThis->hybridType = Type_AtomHybridType_SP2;
-//  }
-//  else if(strcmp(hybrid,"SP3") == 0)
-//  {
-//    pThis->hybridType = Type_AtomHybridType_SP2;
-//  }
-//  else if(strcmp(hybrid,"SP") == 0)
-//  {
-//    pThis->hybridType = Type_AtomHybridType_SP;
-//  }
-//
-//  switch(isBB[0])
-//  {
-//      case 'Y':
-//        pThis->isBBAtom = TRUE;break;
-//      case 'N':
-//        pThis->isBBAtom = FALSE;break;
-//      default:
-//        return ValueError;
-//  }
-//
-//  if(pThis->isBBAtom == TRUE)
-//  {
-//    if(strcmp(atomName, "HN") == 0
-//      || strcmp(atomName, "HT1") == 0
-//      || strcmp(atomName, "HT2") == 0
-//      || strcmp(atomName, "HT3") == 0)
-//    {
-//      pThis->bbAtomType = Type_BB_Atom_HN;
-//    }
-//    else if(strcmp(atomName, "N") == 0)
-//    {
-//      pThis->bbAtomType = Type_BB_Atom_N;
-//    }
-//    else if(strcmp(atomName, "HA") == 0
-//      || strcmp(atomName, "HA1") == 0
-//      || strcmp(atomName, "HA2") == 0)
-//    {
-//      pThis->bbAtomType = Type_BB_Atom_HA;
-//    }
-//    else if(strcmp(atomName, "CA") == 0)
-//    {
-//      pThis->bbAtomType = Type_BB_Atom_CA;
-//    }
-//    else if(strcmp(atomName, "C") == 0)
-//    {
-//      pThis->bbAtomType = Type_BB_Atom_C;
-//    }
-//    else if(strcmp(atomName, "O") == 0
-//      || strcmp(atomName, "OXT") == 0)
-//    {
-//      pThis->bbAtomType = Type_BB_Atom_O;
-//    }
-//  }
-//  else
-//  {
-//    pThis->bbAtomType = Type_NotBBAtom;
-//  }
-//
-//  if(strcmp(polar, "P")==0)
-//  {
-//    pThis->polarity = Type_AtomPolarity_P;
-//  }
-//  else if(strcmp(polar, "C")==0)
-//  {
-//    pThis->polarity = Type_AtomPolarity_C;
-//  }
-//  else if(strcmp(polar, "NP1")==0)
-//  {
-//    pThis->polarity = Type_AtomPolarity_NPAliphatic;
-//  }
-//  else if(strcmp(polar, "NP2")==0)
-//  {
-//    pThis->polarity = Type_AtomPolarity_NPAromatic;
-//  }
-//  else
-//  {
-//    return ValueError;
-//  }
-//
-//  return Success;
-//}
 
 int AtomSetParamsByStringArray(Atom* pThis, StringArray* pParams){
   char* atomName;
@@ -279,7 +127,7 @@ int AtomSetParamsByStringArray(Atom* pThis, StringArray* pParams){
   char* hbB2;
   char* hybrid;
 
-  if(StringArrayGetCount(pParams)!=12) return ValueError;
+  if(StringArrayGetCount(pParams)<12) return ValueError;
 
   atomName = StringArrayGet(pParams, 1);
   atomType = StringArrayGet(pParams, 2);
@@ -399,16 +247,24 @@ int AtomShowInPDBFormat(Atom* pThis, char* header, char* resiName, char* chainNa
   // 0,  6,    12, 16,   17,    21,    22,   26,  30, 38, 46
   // 6,  5,    4,  1,    4,     1,     4,    1,   8, 8, 8
 
-  if(showHydrogen==FALSE && AtomIsHydrogen(pThis)) return Success;  
-  if(pFile==NULL) pFile = stdout;
-  char atomName[MAX_LENGTH_ATOM_NAME+1];
-  strcpy(atomName, pThis->name);
-  if(strlen(atomName) >= 4){ // it must be a hydrogen atom
-    fprintf(pFile, "%-6.6s%5d %-4.4s %-3.3s %1.1s%4d    %8.3f%8.3f%8.3f  %d                    %c\n", header, atomIndex, atomName, resiName, chainName, resiIndex, pThis->xyz.X, pThis->xyz.Y, pThis->xyz.Z, pThis->isXyzValid,pThis->type[0]);
+  if (showHydrogen == FALSE && AtomIsHydrogen(pThis)) return Success;
+  if (!pThis->isXyzValid) return Warning;
+  if (!pFile) pFile = stdout;
+  char atomName[MAX_LENGTH_ATOM_NAME + 1];
+  strcpy(atomName, AtomGetName(pThis));
+  if (strlen(atomName) >= 4 && AtomIsHydrogen(pThis)) { //it must be a hydrogen atom
+    char tempName[MAX_LENGTH_ATOM_NAME + 1];
+    tempName[0] = atomName[3];
+    tempName[1] = atomName[0];
+    tempName[2] = atomName[1];
+    tempName[3] = atomName[2];
+    tempName[4] = '\0';
+    strcpy(atomName, tempName);
+    fprintf(pFile, "%-6.6s%5d %-4.4s %-3.3s %1.1s%4d    %8.3f%8.3f%8.3f  %d                    %c\n", header, atomIndex, atomName, resiName, chainName, resiIndex, pThis->xyz.X, pThis->xyz.Y, pThis->xyz.Z, pThis->isXyzValid, pThis->type[0]);
   }
-  else{
-    if(strcmp(resiName, "ILE")==0 && strcmp(atomName, "CD")==0) strcpy(atomName, "CD1");
-    fprintf(pFile, "%-6.6s%5d  %-3.3s %-3.3s %1.1s%4d    %8.3f%8.3f%8.3f  %d                    %c\n", header, atomIndex, atomName, resiName, chainName, resiIndex, pThis->xyz.X, pThis->xyz.Y, pThis->xyz.Z, pThis->isXyzValid,pThis->type[0]);
+  else {
+    if (strcmp(resiName, "ILE") == 0 && strcmp(atomName, "CD") == 0) strcpy(atomName, "CD1");
+    fprintf(pFile, "%-6.6s%5d  %-3.3s %-3.3s %1.1s%4d    %8.3f%8.3f%8.3f  %d                    %c\n", header, atomIndex, atomName, resiName, chainName, resiIndex, pThis->xyz.X, pThis->xyz.Y, pThis->xyz.Z, pThis->isXyzValid, pThis->type[0]);
   }
 
   return Success;
@@ -615,7 +471,6 @@ BOOL AtomArrayAllAtomXYZAreValid(AtomArray* pThis){
 }
 
 int AtomArrayShowInPDBFormat(AtomArray* pThis, char* header, char* resiName, char* chainName,int atomIndex, int resiIndex, BOOL showHydrogen, FILE* pFile){
-  //char newResiName[MAX_LENGTH_RESIDUE_NAME+1];
   if(strcmp(resiName,"HSD")==0||strcmp(resiName,"HSE")==0) strcpy(resiName, "HIS");
   for(int i=0;i<AtomArrayGetCount(pThis);i++){
     AtomShowInPDBFormat(&pThis->atoms[i], header, resiName, chainName, atomIndex+i, resiIndex, showHydrogen, pFile);

@@ -23,18 +23,6 @@ int ChainTypeConvertFromString(char* typeName, Type_Chain* type){
   if(strcmp(typeName, "PROTEIN")==0){
     *type = Type_Chain_Protein;
   }
-  else if(strcmp(typeName, "SMALLMOL")==0){
-    *type = Type_Chain_SmallMol;
-  }
-  else if(strcmp(typeName, "METALION")==0){
-    *type = Type_Chain_MetalIon;
-  }
-  else if(strcmp(typeName, "NUCLEOTIDE")==0){
-    *type = Type_Chain_Nucleotide;
-  }
-  else if(strcmp(typeName, "WATER")==0){
-    *type = Type_Chain_Water;
-  }
   else{
     return ValueError;
   }
@@ -67,20 +55,8 @@ Type_Chain ChainTypeIdentifiedFromResidueName(char *resiName){
     || strcmp(resiName, "VAL") == 0){
     return Type_Chain_Protein;
   }
-  else if(strcmp(resiName, "GUA") == 0
-    || strcmp(resiName, "ADE") == 0
-    || strcmp(resiName, "CYT") == 0
-    || strcmp(resiName, "THY") == 0
-    || strcmp(resiName, "URA") == 0){
-    return Type_Chain_Nucleotide;
-  }
-  else if(strcmp(resiName, "HOH") == 0
-    || strcmp(resiName, "H2O") == 0
-    || strcmp(resiName, "WAT") == 0){
-    return Type_Chain_Water;
-  }
   else{
-    return Type_Chain_SmallMol;
+    return Type_Chain_Unknown;
   }
 }
 

@@ -45,7 +45,6 @@ int StructureGetChainCount(Structure* pThis);
 Chain* StructureGetChain(Structure* pThis, int index);
 Chain* StructureGetChainByName(Structure* pThis, char* chainName);
 int StructureFindChain(Structure* pThis, char* chainName, int* index);
-int StructureFindSmallMol(Structure* pThis, Residue** ppSmallMol);
 int StructureAddChain(Structure* pThis, Chain* newChain);
 int StructureDeleteChain(Structure* pThis, char* chainName);
 int StructureShowInPDBFormat(Structure* pThis, BOOL showHydrogen, FILE* pFile);
@@ -56,7 +55,6 @@ int StructureShowAtomParameter(Structure* pStructure);
 
 int ProteinSiteBuildAllRotamers(Structure* pThis, int chainIndex, int resiIndex, RotamerLib* rotlib, AtomParamsSet* atomParams, ResiTopoSet* resiTopos);
 int ProteinSiteWriteRotamers(Structure *pStructure, int chainIndex, int resiIndex, const char *rotamerFilePath);
-int StructureGenerateProteinRotamers(Structure* pThis, RotamerLib* rotlib, AtomParamsSet* atomParams, ResiTopoSet* resiTopos);
 int ProteinSiteBuildMutatedRotamers(Structure* pThis, int chainIndex, int resiIndex, RotamerLib* rotlib,AtomParamsSet* atomParams,ResiTopoSet* resiTopos, StringArray *pDesignTypes, StringArray *pPatchTypes);
 
 int ProteinSiteBuildWildtypeRotamers(Structure* pThis, int chainIndex, int resiIndex, RotamerLib* rotlib, AtomParamsSet* atomParams, ResiTopoSet* resiTopos);
@@ -71,7 +69,6 @@ int StructureGetAminoAcidComposition(Structure* pStructure, int *aas);
 int StructureShowDesignSites(Structure* pThis, FILE* pFile);
 int StructureComputeResidueInteractionWithFixedSurroundingResidues(Structure *pStructure, int chainIndex, int residueIndex);
 int ProteinSiteExpandHydroxylRotamers(Structure *pStructure, int chainIndex, int resiIndex, ResiTopoSet *pTopos);
-int ProteinRotamerGenerate(Structure* pStructure, AtomParamsSet* pAtomParams,ResiTopoSet* pResiTopo, char* rotamer_lib_file);
 
 
 BOOL ProteinSiteCheckClash(Structure *pStructure, int chainIndex, int residueIndex);

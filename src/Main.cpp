@@ -37,6 +37,9 @@ char rotamer_lib_file[MAX_LENGTH_FILE_NAME+1] = "library/rotlib984.txt";
 char pdb_structure_file[MAX_LENGTH_FILE_NAME+1] = "example/1A22.pdb";
 char mutant_file[MAX_LENGTH_FILE_NAME+1] = "individual_list.txt";
 
+int MAX_NUM_OF_RUNS = 3;
+double MAX_ALLOWED_PERTURBATION_RMSD = 1.0;
+BOOL FLAG_LOCAL_PERTURBATION = FALSE;
 
 char splitchains[MAX_LENGTH_ONE_LINE_IN_FILE+1]="";
 char split_part1[MAX_LENGTH_ONE_LINE_IN_FILE+1]="";
@@ -64,7 +67,7 @@ int ExtractPathAndName(char* fullpath, char* path, char* name){
 
 int main(int argc, char* argv[]){
   // show EvoEF interface
-  EvoEF_interface();
+  EvoEF_PrintAdertisement();
   timeStart = clock();
   setvbuf(stdout, NULL, _IONBF, 0);
   ExtractPathAndName(argv[0], PROGRAM_PATH, PROGRAM_NAME);
@@ -77,9 +80,9 @@ int main(int argc, char* argv[]){
   //char *cmdname = "ComputeBinding";
   //char *cmdname = "RepairStructure";
   //char *cmdname = "BuildMutant";
-  //char *cmdname = "OptimizeHydrogen";
+  char *cmdname = "OptimizeHydrogen";
   //char *cmdname = "AddHydrogen";
-  char *cmdname = "ComputeResiEnergy";
+  //char *cmdname = "ComputeResiEnergy";
   //char *cmdname = "ShowResiComposition";
 
   const char* short_opts="hv";
@@ -90,7 +93,8 @@ int main(int argc, char* argv[]){
     {"pdb",           required_argument, NULL, 4},
     {"split",         required_argument, NULL, 5},
     {"mutant_file",   required_argument, NULL, 6},
-    {"cutoff",        required_argument, NULL, 9},
+    {"perturbation",  required_argument, NULL, 7},
+    {"num_of_runs",   required_argument, NULL, 8},
     {NULL,            no_argument,       NULL, 0}
   };
   
@@ -102,17 +106,17 @@ int main(int argc, char* argv[]){
     switch(opt){
       //deal with short options
       case 'h':
-        EvoEF_help();
+        EvoEF_PrintHelp();
         exit(Success);
       case 'v':
-        EvoEF_version();
+        EvoEF_PrintVersion();
         exit(Success);
       // deal with long options
       case 1:
-        EvoEF_help();
+        EvoEF_PrintHelp();
         exit(Success);
       case 2:
-        EvoEF_version();
+        EvoEF_PrintVersion();
         exit(Success);
       case 3:
         cmdname = optarg;
@@ -121,7 +125,7 @@ int main(int argc, char* argv[]){
           exit(ValueError);
         }
         else{
-          printf("Command %s works.\n", cmdname);
+          printf("Command %s is supported.\n", cmdname);
         }
         break;
       case 4: 
@@ -129,13 +133,13 @@ int main(int argc, char* argv[]){
         break;
       case 5:
         strcpy(splitchains,optarg);
-        sscanf(splitchains,"%[^,],%s",split_part1,split_part2);
+        sscanf(splitchains, "%[^,],%s", split_part1, split_part2);
         chainSplitFlag=TRUE;
         //check if the two parts contain identical chains
         for(int i=0; i<(int)strlen(split_part1); i++){
           char tmp[2]={split_part1[i],'\0'};
           if(strstr(split_part2,tmp)!=NULL){
-            printf("The split two parts contain identical chains, EvoEF exits,please check!\n");
+            printf("The split two parts contain identical chains, EvoEF exits. Please check!\n");
             exit(FormatError);
           }
         }
@@ -143,9 +147,16 @@ int main(int argc, char* argv[]){
       case 6:
         strcpy(mutant_file,optarg);
         break;
+      case 7:
+        MAX_ALLOWED_PERTURBATION_RMSD = atof(optarg);
+        FLAG_LOCAL_PERTURBATION = TRUE;
+        break;
+      case 8:
+        MAX_NUM_OF_RUNS = atoi(optarg);
+        break;
       default:
         sprintf(usrMsg, "in file %s function %s() line %d, unknown option, EvoEF will exit.", __FILE__, __FUNCTION__, __LINE__);
-        EvoEF_help();
+        EvoEF_PrintHelp();
         TraceError(usrMsg, ValueError);
         exit(ValueError);
         break;
@@ -181,7 +192,7 @@ int main(int argc, char* argv[]){
   ResiTopoSetRead(&resiTopo, residue_top_file);
   StructureCreate(&structure);
   StructureConfig(&structure, pdb_structure_file, &atomParam, &resiTopo);
-  printf("pdb file %s.pdb was read by EvoEF.\n", pdbid);
+  printf("pdb file %s.pdb was read by EvoEF\n", pdbid);
 
   if(!strcmp(cmdname, "ComputeStability")){
     double energyTerms[MAX_EVOEF_ENERGY_TERM_NUM];
@@ -211,7 +222,8 @@ int main(int argc, char* argv[]){
   else if(!strcmp(cmdname, "BuildMutant")){
     RotamerLib rotlib;
     RotamerLibCreate(&rotlib,rotamer_lib_file);
-    EvoEF_BuildMutant(&structure, mutant_file, &rotlib, &atomParam, &resiTopo,pdbid);
+    //EvoEF_BuildMutant(&structure, mutant_file, &rotlib, &atomParam, &resiTopo,pdbid);
+    EvoEF_BuildMutant2(&structure, mutant_file, &rotlib, &atomParam, &resiTopo,pdbid);
     RotamerLibDestroy(&rotlib);
   }
   else if(!strcmp(cmdname, "ComputeResiEnergy")){
@@ -232,7 +244,7 @@ int main(int argc, char* argv[]){
     EvoEF_OptimizeHydrogen(&structure,&atomParam, &resiTopo,pdbid);
   }
   else if(!strcmp(cmdname,"AddHydrogen")){
-    EvoEF_AddHydrogen(&structure,pdbid);
+    EvoEF_AddPolarHydrogen(&structure,pdbid);
   }
   else{
     printf("Unknown command name: %s\n, EvoEF will exit.\n", cmdname);
