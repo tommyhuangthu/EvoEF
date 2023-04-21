@@ -160,18 +160,17 @@ But unauthorized copying of the source code files via any medium is strictly
 prohibited.
 
 
-Bugs report
+Contact
 -----------------------
-Please contact Dr. Xiaoqiang Huang if you find bugs, thanks! 
+For suggestions or bug reporting, please contact
 xiaoqiah@outlook or xiaoqiah@umich.edu
 
 
 Pls cite EvoEF if it is useful to your work:  
 ----------------------------------------------
-1. Robin Pearce, Xiaoqiang Huang, Dani Setiawan, Yang Zhang. EvoDesign: Designing 
+
+Robin Pearce, Xiaoqiang Huang, Dani Setiawan, Yang Zhang. EvoDesign: Designing 
 Protein–Protein Binding Interactions Using Evolutionary Interface Profiles in 
 Conjunction with an Optimized Physical Energy Function. Journal of Molecular 
 Biology (2019) 431: 2467-2476.
-2. Xiaoqiang Huang, Robin Pearce, Yang Zhang. EvoEF2: accurate and fast energy 
-function for computational protein design. Bioinformatics (2020) 36:1135-1142.
 
