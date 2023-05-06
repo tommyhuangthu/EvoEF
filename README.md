@@ -5,13 +5,13 @@ EvoEF is an abbreviated name of the EvoDesign physcics-base Energy Function. Evo
 # What EvoEF can do?
 The following useful functions are supported by EvoEF:
 
-ComputeStability: compute the stability of a protein or protein complex (in PDB format).
+**ComputeStability**: compute the stability of a protein or protein complex (in PDB format).
 
-ComputeBinding: compute the binding affinity of a protein-protein complex.
+**ComputeBinding**: compute the binding affinity of a protein-protein complex.
 
-RepairStructure: repair incomplete side chains of a protein. The side chains will be optimized to reduce steric clashes at the best. The hydroxyl hydrogens of Ser, Thr, and Tyr are optimized. Side-chain groups of His, Asn, and Gln may be flipped for optimizing hydrogen-bonding networks.
+**RepairStructure**: repair incomplete side chains of a protein. The side chains will be optimized to reduce steric clashes at the best. The hydroxyl hydrogens of Ser, Thr, and Tyr are optimized. Side-chain groups of His, Asn, and Gln may be flipped for optimizing hydrogen-bonding networks.
 
-BuildMutant: build mutation model.
+**BuildMutant**: build mutation model.
   
 OptimizeHydrogen: optimize hydroxyl hydrogens for Ser, Thr, and Tyr.
 
