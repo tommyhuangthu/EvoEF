@@ -1,21 +1,21 @@
 # Introduction to EvoEF
-EvoEF is an abbreviated name of the EvoDesign physcics-base Energy Function. EvoDesign is a de novo protein design method developed by the Yang Zhang Lab at the University of Michigan. The evolutionary profile- and physics-based potential is used for protein design scoring. In the earlier version of EvoDesign, FoldX is used to compute the physical energy. Since physical energy is significant in modeling atomic-level interactions, it plays important role in protein-protein interaction design. To improve the computational accuracy and speed of EvoDesign, we developed EvoEF to replace FoldX.
+EvoEF is an abbreviated name of the **Evo**Design physcics-base **E**nergy **F**unction. EvoDesign is a de novo protein design method developed by the Yang Zhang Lab at the University of Michigan. The evolutionary profile- and physics-based potential is used for protein design scoring. In the earlier version of EvoDesign, FoldX is used to compute the physical energy. Since physical energy is significant in modeling atomic-level interactions, it plays important role in protein-protein interaction design. To improve the computational accuracy and speed of EvoDesign, we developed EvoEF to replace FoldX.
 
 
 # What EvoEF can do?
 The following useful functions are supported by EvoEF:
 
-**ComputeStability**: compute the stability of a protein or protein complex (in PDB format).
+**ComputeStability**: compute the stability (or total energy) of a protein or protein complex.
 
-**ComputeBinding**: compute the binding affinity of a protein-protein complex.
+**ComputeBinding**: compute the binding interaction energy of a protein-protein complex.
 
 **RepairStructure**: repair incomplete side chains of a protein. The side chains will be optimized to reduce steric clashes at the best. The hydroxyl hydrogens of Ser, Thr, and Tyr are optimized. Side-chain groups of His, Asn, and Gln may be flipped for optimizing hydrogen-bonding networks.
 
 **BuildMutant**: build mutation model.
   
-OptimizeHydrogen: optimize hydroxyl hydrogens for Ser, Thr, and Tyr.
+**OptimizeHydrogen**: optimize hydroxyl hydrogens for Ser, Thr, and Tyr.
 
-Note that EvoEF works with amino acids/proteins only. It cannot handle nucleotides, DNA, RNA, water, and/or other molecules.
+**Note that EvoEF works with amino acids/proteins only. It cannot handle nucleotides, DNA, RNA, water, and/or other molecules.**
 
 # Usage suggestions
 EvoEF is most widely used to calculate the thermodynamic change (ddG) caused by amino acid substitutions (mutations). There are two kinds of ddGs to be evaluated: ddG(stability) and ddG(binding). The former measures protein stability change upon mutations, while the latter measures the binding affinity change for protein-protein interactions upon mutations.
