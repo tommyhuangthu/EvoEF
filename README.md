@@ -1,5 +1,5 @@
 # INTRODUCTION
-EvoEF is an abbreviated name of the **Evo**Design physcical **E**nergy **F**unction for protein design. EvoDesign is a de novo protein design method developed by the Yang Zhang Lab at the University of Michigan. The evolutionary profile- and physics-based potential is used for protein design scoring. In the earlier version of EvoDesign, FoldX is used to compute the physical energy. Since physical energy is significant in modeling atomic-level interactions, it plays important role in protein-protein interaction design. To improve the computational accuracy and speed of EvoDesign, we developed EvoEF to replace FoldX.
+EvoEF (**Evo**Design physcical **E**nergy **F**unction) is the physical energy function component of EvoDesign, an approach developed for de novo protein sequence design given a protein backbone scaffold. EvoDesign uses a composite score function that combines the position-specific scoring matrix (PSSM, derived from structure-based evolutionary analysis) and EvoEF for sequence/structure decoy evaluation in the Monte Carlo design simulations. In the earlier versions of EvoDesign, FoldX was used to compute the physical energy, which is, however, rather slow. To improve the scoring accuracy and speed, we developed EvoEF to replace FoldX. Users can read the REFERENCE paper for more details.
 
 # INSTALLATION
 We recommend users to download the EvoEF source-code package to your computer and build the EvoEF executable on your own. After downloading and unzipping the package, change into the $path/EvoEF/ directory and run: <i> g++ -O3 --fast-math -o EvoEF src/*.cpp </i> or <i> ./build.sh </i> if you are working in a UNIX/Linux environent. If you are working on a Windows system, you need to install the g++ compiler first.
@@ -103,5 +103,5 @@ If the protein complex has more than chains, you can use the "split" option to d
 # COPYRIGHT & CONTACT
 Copyright (c) 2019 Xiaoqiang Huang. EvoEF is free to academic users. For suggestions, please contact xiaoqiah@umich.edu or xiaoqiah@outlook.com.
 
-# REFERENCES
+# REFERENCE
 Pearce R, Huang X, Setiawan D, Zhang Y. EvoDesign: Designing Protein–Protein Binding Interactions Using Evolutionary Interface Profiles in Conjunction with an Optimized Physical Energy Function. Journal of Molecular Biology (2019) 431: 2467-2476.
