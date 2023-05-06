@@ -36,27 +36,27 @@ Running this command will generate a panel of models named as your_Repair_Model_
 
 ## 3.1 Calculate ΔΔ<i>G</i><sub>stability</sub>
 
-First, calculate the stability score for the reference protein:
+First, calculate the stability score for the reference protein (Δ<i>G</i><sub>stability,ref</sub>):
   
-<i> $path/EvoEF --command=ComputeStability --pdb=your_Repair.pdb </i>. The total energy is referred to as Δ<i>G</i><sub>stability,ref</sub>.
+$path/EvoEF --command=ComputeStability --pdb=your_Repair.pdb
   
-Then, calculate the stability score for the mutant protein, e.g.:
+Then, calculate the stability score for the mutant protein (Δ<i>G</i><sub>stability,mut</sub>), e.g.:
   
-<i> $path/EvoEF --command=ComputeStability --pdb=your_Repair_Model_0001.pdb </i>. The total energy is referred to as ΔΔ<i>G</i><sub>stability,mut</sub>.
+$path/EvoEF --command=ComputeStability --pdb=your_Repair_Model_0001.pdb
   
-Finally, ΔΔ<i>G</i><sub>stability</sub> = Δ<i>G</i><sub>stability,mut</sub> - Δ<i>G</i><sub>stability,ref</sub>
+ΔΔ<i>G</i><sub>stability</sub> = Δ<i>G</i><sub>stability,mut</sub> - Δ<i>G</i><sub>stability,ref</sub>
 
 ## 3.2 Calculate ΔΔ<i>G</i><sub>bind</sub>
   
-First, calculate the binding interaction score for the reference protein-protein complex:
+First, calculate the binding interaction score for the reference protein-protein complex (Δ<i>G</i><sub>bind,ref</sub>):
 
-<i> $path/EvoEF --command=ComputeBinding --pdb=your_Repair.pdb </i>. The binding energy is referred to as Δ<i>G</i><sub>bind,ref</sub>.
+$path/EvoEF --command=ComputeBinding --pdb=your_Repair.pdb
 
-Then, calculate the binding interaction score for the mutant protein, e.g.:
+Then, calculate the binding interaction score for the mutant complex (Δ<i>G</i><sub>bind,mut</sub>), e.g.:
 
-<i> $path/EvoEF --command=ComputeBinding --pdb=your_Repair_Model_0001.pdb </i>. The binding energy is referred to as ΔΔ<i>G</i><sub>bind,mut</sub>.
+$path/EvoEF --command=ComputeBinding --pdb=your_Repair_Model_0001.pdb
 
-Finally, ΔΔ<i>G</i><sub>bind</sub> = Δ<i>G</i><sub>bind,mut</sub> - Δ<i>G</i><sub>bind,ref</sub>
+ΔΔ<i>G</i><sub>bind</sub> = Δ<i>G</i><sub>bind,mut</sub> - Δ<i>G</i><sub>bind,ref</sub>
 
 If the protein complex has more than chains, you can use the "split" option to divide it into two parts before calculating the binding energy (see below).
 
@@ -81,26 +81,28 @@ user should specify how to split chains into two parts for ComputeBinding. Other
 
 ## RepairStructure
 
-$path/EvoEF --command=RepairStructure --pdb=protein.pdb [--num_of_runs=3]
+$path/EvoEF --command=RepairStructure --pdb=your.pdb --num_of_runs=3
 
-Running this command will create a new structure model named "model_Repair.pdb" in the current directory. Running the command successfully should generate a new structure file named “mod-el_Repair_Model_1.pdb”. In the mutant model, the optimized polar hydrogen coordinates are also shown.
+Running this command will create a new structure model named "your_Repair.pdb" in the current directory. The option "--number_of_runs=3" specify the number of repeated times of repairing/optimizing the structure sequentially (default number: 3).
 
 ## BuildMutant
 
-$path/EvoEF --command=BuildMutant --pdb=model.pdb --mutant_file=individual_list.txt  [--num_of_runs=10]
+$path/EvoEF --command=BuildMutant --pdb=your.pdb --mutant_file=individual_list.txt  --num_of_runs=10 
 
 Here, the "individual_list.txt" file shows the mutants that you want to build. It has the following format:
 
 CA171A,DB180E;
 
-Each mutation is written in one line ending with “;”, and multiple mutants are divided by “,”. Note that there’s no gap/space between single mutations. For each single mutation, the first alphabet is the wild-type amino acid, the second is the identifier of the chain that the amino acid is attached to, the number is the position of the amino acid in the chain, and the last alphabet is the amino acid after mutation. Running the command successfully should generate a new structure file named “model_Repair_Model_1.pdb”. In the mutant model, the optimized polar hydrogen coordinates are also shown.
+Each mutant is written in one line ending with “;”, and multiple mutations in a mutant are divided by “,”. Note that there is no gap or space character between single mutations. For each single mutation, the first letter is the reference amino acid, the second letter is the chain identifier of the amino acid followed by its position in the chain, and the last letter is the amino acid after mutation. Running the command successfully should generate a new structure file named “your_Model_1.pdb”. The option "--number_of_runs=10" specify the number of repeated times of optimizing the rotamers of the mutated and surrounding residues sequentially (default number: 10). 
 
 ## OptimizeHydrogen
 
-$path/EvoEF --command=OptimizeHydrogen --pdb=model.pdb [--num_of_runs=3]
-A new model named "model_OptH.pdb" will be generated.
+$path/EvoEF --command=OptimizeHydrogen --pdb=your.pdb --num_of_runs=3
+
+Running this command successfully will create a file named "your_OptH.pdb" in the current directory. The option "--number_of_runs=3" specify the number of repeated times of optimizing the locations of Ser/Thr/Tyr hydroxyl hydrogens and Asn/Gln/His sidechain polar hydrogens (default number: 3).
 
 ## To show EvoEF usage:
+
 $path/EvoEF --help
 
 # Copyright & Contact
