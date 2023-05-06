@@ -44,7 +44,7 @@ Then, calculate the stability score for the mutant protein, e.g.:
   
 <path>/EvoEF --command=ComputeStability --pdb=your_Repair_Model_0001.pdb. The total energy is referred to as ΔΔ<i>G</i><sub>stability,mut</sub>.
   
-Finally, ΔΔ<i>G</i><sub>stability</sub><sup>ref->mut</sup> = Δ<i>G</i><sub>stability</sub><sup>mut</sup> - Δ<i>G</i><sub>stability</sub><sup>ref</sup>
+Finally, ΔΔ<i>G</i><sub>stability</sub> = Δ<i>G</i><sub>stability,mut</sub> - Δ<i>G</i><sub>stability,ref</sub>
 
 ## 3.2 Calculate ΔΔ<i>G</i><sub>bind</sub>
   
@@ -56,7 +56,7 @@ Then, calculate the binding interaction score for the mutant protein, e.g.:
 
 $path/EvoEF --command=ComputeBinding --pdb=your_Repair_Model_0001.pdb. The binding energy is referred to as ΔΔ<i>G</i><sub>bind,mut</sub>.
 
-Finally, ΔΔ<i>G</i><sub>bind</sub><sup>ref->mut</sup> = Δ<i>G</i><sub>bind</sub><sup>mut</sup> - Δ<i>G</i><sub>bind</sub><sup>ref</sup>
+Finally, ΔΔ<i>G</i><sub>bind</sub> = Δ<i>G</i><sub>bind,mut</sub> - Δ<i>G</i><sub>bind,ref</sub>
 
 If the protein complex has more than chains, you can use the 'split' option to divide it into two parts before calculating the binding energy (see below).
 
