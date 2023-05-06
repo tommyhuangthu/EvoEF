@@ -1,5 +1,5 @@
 # Introduction to EvoEF
-EvoEF is an abbreviated name of the EvoDesign physcics-base Energy Function. EvoDesign is a de novo protein design method developed by the Yang Zhang Lab at the University of Michigan. The evolutionary profile- and physics-based potential is used for protein design scoring. In the earlier version of EvoDesign, FoldX is used to compute the physical energy. Since physical energy is significant in modeling atomic-level interactions, it plays important role in protein-protein interaction design. To improve the computational accuracy and speed, we developed EvoEF to replace FoldX.
+EvoEF is an abbreviated name of the EvoDesign physcics-base Energy Function. EvoDesign is a de novo protein design method developed by the Yang Zhang Lab at the University of Michigan. The evolutionary profile- and physics-based potential is used for protein design scoring. In the earlier version of EvoDesign, FoldX is used to compute the physical energy. Since physical energy is significant in modeling atomic-level interactions, it plays important role in protein-protein interaction design. To improve the computational accuracy and speed of EvoDesign, we developed EvoEF to replace FoldX.
 
 
 # What EvoEF can do?
@@ -18,15 +18,11 @@ BuildMutant: build mutation model.
   
 OptimizeHydrogen: optimize hydroxyl hydrogens for Ser, Thr, and Tyr.
 
-Note that EvoEF only works with amino acids and proteins. It cannot handle 
-nucleotides, DNA, RNA, water, and/or other molecules!
+Limitations: EvoEF works with amino acids/proteins only. It cannot handle nucleotides, DNA, RNA, water, and/or other molecules.
 
 
 # Usage suggestions
-EvoEF is most widely used to calculate the thermodynamic change (ddG) caused by amino 
-acid substitutions (mutations). There are two kinds of ddGs to be evaluated: ddG(stability) 
-and ddG(binding). The former measures protein stability change upon mutations, while the 
-latter measures the binding affinity change for protein-protein interactions upon mutations.
+EvoEF is most widely used to calculate the thermodynamic change (ddG) caused by amino acid substitutions (mutations). There are two kinds of ddGs to be evaluated: ddG(stability) and ddG(binding). The former measures protein stability change upon mutations, while the latter measures the binding affinity change for protein-protein interactions upon mutations.
 
 The following steps are suggested for calculating ddG:
 (1) repair your structure:
@@ -78,12 +74,12 @@ or run (if you use a UNIX/Linux environment):
 
 
 # Usage
-1. To compute protein stability, you can run:
+(1) To compute protein stability, you can run:
 
 ./EvoEF --command=ComputeStability  --pdb=protein.pdb
 
 
-2. To compute protein-protein binding affinity, you can run:
+(2) To compute protein-protein binding affinity, you can run:
 
 ./EvoEF --command=ComputeBinding --pdb=complex.pdb
   
@@ -95,7 +91,7 @@ user should specify how to split the chains into two parts for computing
 the binding affinity. Otherwise EvoEF will output the interaction energy
 between any two chain pair.
 
-3. To repair the structure model and do energy minimization:
+(3) To repair the structure model and do energy minimization:
 
 ./EvoEF --command=RepairStructure --pdb=protein.pdb [--num_of_runs=3]
 
@@ -104,7 +100,7 @@ directory where you run the command. Running the command successfully
 should generate a new structure file named “mod-el_Repair_Model_1.pdb”. 
 In the mutant model, the optimized polar hydrogen coordinates are also shown.
 
-4. To build mutation model, you can run:
+(4) To build mutation model, you can run:
 
 ./EvoEF --command=BuildMutant --pdb=model.pdb --mutant_file=individual_list.txt  [--num_of_runs=10]
 
@@ -123,18 +119,17 @@ mutation. Running the command successfully should generate a new
 structure file named “model_Repair_Model_1.pdb”. In the mutant model, 
 the optimized polar hydrogen coordinates are also shown.
 
-5. To optimize the hydroxyl hydrogens, run:
+(5) To optimize the hydroxyl hydrogens, run:
 ./EvoEF --command=OptimizeHydrogen --pdb=model.pdb [--num_of_runs=3]
 A new model named "model_OptH.pdb" will be generated.
 
 
-6. For a detailed description of the supported commands and options, pls run:
+(6) For a detailed description of the supported commands and options, pls run:
 ./EvoEF --help
 to learn more information.
 
 
-Disclaimer and copyright
---------------------------
+# Disclaimer and copyright
 Copyright (c) 2019 Xiaoqiang Huang. EvoEF is free to academic users.
 
 
