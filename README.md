@@ -18,29 +18,15 @@ The following useful functions are supported by EvoEF:
 **Note that EvoEF works with amino acids/proteins only. It cannot handle nucleotides, DNA, RNA, water, and/or other molecules.**
 
 # Usage suggestions
-EvoEF is most widely used to calculate the thermodynamic change (ddG) caused by amino acid substitutions (mutations). There are two kinds of ddGs to be evaluated: ddG(stability) and ddG(binding). The former measures protein stability change upon mutations, while the latter measures the binding affinity change for protein-protein interactions upon mutations.
+EvoEF is most widely used to calculate the thermodynamic change (ΔΔ<i>G</i><sub>bind</sub> and ΔΔ<i>G</i><sub>stability</sub>) caused by amino acid substitutions (mutations). ΔΔ<i>G</i><sub>stability</sub> is an indicator of measures protein stability change upon mutation(s). ΔΔ<i>G</i><sub>bind</sub> is an indicator of the binding affinity change of protein-protein interaction upon mutation(s).
 
-The following steps are suggested for calculating ddG:
-(1) repair your structure:
-./EvoEF --command=RepairStructure --pdb=your.pdb
-it will generate a model named your_Repair.pdb
+The following steps are suggested for calculating ΔΔ<i>G</i>:
+**1. Repair your structure**: <i><path>/EvoEF --command=RepairStructure --pdb=your.pdb</i>. Running this command successfully will generate a model named your_Repair.pdb
 
-(2) build mutant:
-./EvoEF --command=BuildMutant --pdb=your_Repair.pdb --mutant_file=individual_list.txt
-it will generated a variety of models named as your_Repair_Model_xxxx.pdb, where xxxx is a four digit number from 0001 to 9999, depending on how many mutants have been specified in the mutant file.
+**2. Build mutant**: <path>/EvoEF --command=BuildMutant --pdb=your_Repair.pdb --mutant_file=individual_list.txt. Running this command will generate a panel of models named as your_Repair_Model_dddd.pdb, where dddd is a four digit number from 0001 to 9999, depending on the number of mutants to be generated that are listed in the mutant file.
 
-(3) calculate ddG
-
-(3.1) ddG(stability)
-first calcualte dG(stability) for the wildtype:
-./EvoEF --command=ComputeStability --pdb=your_Repair.pdb
-the total score is dG(stability, wildtype).
-
-then calcualte dG(stability) for a mutant:
-./EvoEF --command=ComputeStability --pdb=your_Repair_Model_0001.pdb
-the total score is dG(stability, Model_0001)
-
-ddG(stability, wildtype->Model_0001) = dG(stability, Model_0001) - dG(stability, wildtype)
+**3. Calculate ΔΔ<i>G</i>**
+For ΔΔ<i>G</i><sub>stability</sub>: first, calculate the stability score for the reference protein: <path>/EvoEF --command=ComputeStability --pdb=your_Repair.pdb. The total energy is referred to as Δ<i>G</i><sub>stability,ref</sub>. Then, calculate the stability score for the mutant protein, e.g.: <path>/EvoEF --command=ComputeStability --pdb=your_Repair_Model_0001.pdb; The total energy is referred to as ΔΔ<i>G</i><sub>stability,mut</sub>. Finally, ΔΔ<i>G</i><sub>stability</sub><sup>ref->mut</sup> = Δ<i>G</i><sub>stability</sub><sup>mut</sup> - Δ<i>G</i><sub>stability</sub><sup>ref</sup>
 
 (3.2) ddG(binding)
 first calculate dG(binding) for the wildtype complex:
