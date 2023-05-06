@@ -24,50 +24,42 @@ The following steps are suggested for calculating ΔΔ<i>G</i>:
 
 **1. Repair your structure**
 
-  <i>$path/EvoEF --command=RepairStructure --pdb=your.pdb</i>
+<i>$path/EvoEF --command=RepairStructure --pdb=your.pdb</i>
   
-  Running this command successfully will generate a model named your_Repair.pdb
+Running this command successfully will generate a model named your_Repair.pdb
 
 **2. Build mutant**
 
-  <i>$path/EvoEF --command=BuildMutant --pdb=your_Repair.pdb --mutant_file=individual_list.txt</i>
+<i>$path/EvoEF --command=BuildMutant --pdb=your_Repair.pdb --mutant_file=individual_list.txt</i>
   
-  Running this command will generate a panel of models named as your_Repair_Model_dddd.pdb, where dddd is a four digit number from 0001 to 9999, depending on the number of mutants to be generated that are listed in the mutant file.
+Running this command will generate a panel of models named as your_Repair_Model_dddd.pdb, where dddd is a four digit number from 0001 to 9999, depending on the number of mutants to be generated that are listed in the mutant file.
 
 **3. Calculate ΔΔ<i>G</i>**
-  For ΔΔ<i>G</i><sub>stability</sub>, first, calculate the stability score for the reference protein:
+3.1 For ΔΔ<i>G</i><sub>stability</sub>, first, calculate the stability score for the reference protein:
   
-  $path/EvoEF --command=ComputeStability --pdb=your_Repair.pdb. The total energy is referred to as Δ<i>G</i><sub>stability,ref</sub>.
+$path/EvoEF --command=ComputeStability --pdb=your_Repair.pdb. The total energy is referred to as Δ<i>G</i><sub>stability,ref</sub>.
   
-  Then, calculate the stability score for the mutant protein, e.g.:
+Then, calculate the stability score for the mutant protein, e.g.:
   
-  <path>/EvoEF --command=ComputeStability --pdb=your_Repair_Model_0001.pdb. The total energy is referred to as ΔΔ<i>G</i><sub>stability,mut</sub>.
+<path>/EvoEF --command=ComputeStability --pdb=your_Repair_Model_0001.pdb. The total energy is referred to as ΔΔ<i>G</i><sub>stability,mut</sub>.
   
-  Finally, ΔΔ<i>G</i><sub>stability</sub><sup>ref->mut</sup> = Δ<i>G</i><sub>stability</sub><sup>mut</sup> - Δ<i>G</i><sub>stability</sub><sup>ref</sup>
+Finally, ΔΔ<i>G</i><sub>stability</sub><sup>ref->mut</sup> = Δ<i>G</i><sub>stability</sub><sup>mut</sup> - Δ<i>G</i><sub>stability</sub><sup>ref</sup>
 
-(3.2) ddG(binding)
-first calculate dG(binding) for the wildtype complex:
-./EvoEF --command=ComputeBinding --pdb=your_Repair.pdb
-The total score is dG(binding, wildtype)
+3.2 For ΔΔ<i>G</i><sub>bind</sub>, first, calculate the binding interaction score for the reference protein-protein complex:
 
-then calcualte dG(binding) for a mutant:
-./EvoEF --command=ComputeBinding --pdb=your_Repair_Model_0001.pdb
-the total score is dG(binding, Model_0001)
+$path/EvoEF --command=ComputeBinding --pdb=your_Repair.pdb. The binding energy is referred to as Δ<i>G</i><sub>bind,ref</sub>.
 
-ddG(binding, wildtype->Model_0001) = dG(binding,Model_0001) - dG(binding, wildtype)
+Then, calculate the binding interaction score for the mutant protein, e.g.:
 
-If your complex has >2 chains, you can use the 'split' option to divide your
-protein into two parts for binding assessment (see below for details).
+$path/EvoEF --command=ComputeBinding --pdb=your_Repair_Model_0001.pdb. The binding energy is referred to as ΔΔ<i>G</i><sub>bind,mut</sub>.
+
+Finally, ΔΔ<i>G</i><sub>bind</sub><sup>ref->mut</sup> = Δ<i>G</i><sub>bind</sub><sup>mut</sup> - Δ<i>G</i><sub>bind</sub><sup>ref</sup>
+
+If the protein complex has more than chains, you can use the 'split' option to divide it into two parts before calculating the binding energy (see below).
 
 
 # Installation
-change directory into EvoEF/, and run:
-
-g++ -O3 --fast-math -o EvoEF src/*.cpp
-
-or run (if you use a UNIX/Linux environment):
-
-./build.sh
+change into the $path/EvoEF/ directory, and run: <i> g++ -O3 --fast-math -o EvoEF src/*.cpp </i> or <i> ./build.sh </i> if you are working in a UNIX/Linux environent.
 
 
 # Usage
