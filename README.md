@@ -17,12 +17,12 @@ The following useful functions are supported by EvoEF:
 
 **Note that EvoEF works with amino acids/proteins only. It cannot handle nucleotides, DNA, RNA, water, and/or other molecules.**
 
-# Usage suggestions
+# Usage
 EvoEF is most widely used to calculate the thermodynamic change (ΔΔ<i>G</i><sub>bind</sub> and ΔΔ<i>G</i><sub>stability</sub>) caused by amino acid mutations. ΔΔ<i>G</i><sub>stability</sub> is an indicator of measures protein stability change upon mutation(s), and ΔΔ<i>G</i><sub>bind</sub> is an indicator of the binding affinity change of protein-protein interaction upon mutation(s), where a negative Δ<i>G</i> value indicates favorable energy change.
 
 The following steps are suggested for calculating ΔΔ<i>G</i>:
 
-**1. Repair your structure**
+## **1. Repair your structure**
 
 <i>$path/EvoEF --command=RepairStructure --pdb=your.pdb</i>
   
