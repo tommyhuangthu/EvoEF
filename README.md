@@ -22,20 +22,21 @@ EvoEF is most widely used to calculate the thermodynamic change (ΔΔ<i>G</i><su
 
 The following steps are suggested for calculating ΔΔ<i>G</i>:
 
-## **1. Repair your structure**
+## 1. Repair your structure
 
 <i>$path/EvoEF --command=RepairStructure --pdb=your.pdb</i>
   
 Running this command successfully will generate a model named your_Repair.pdb
 
-**2. Build mutant**
+## 2. Build mutant
 
 <i>$path/EvoEF --command=BuildMutant --pdb=your_Repair.pdb --mutant_file=individual_list.txt</i>
   
 Running this command will generate a panel of models named as your_Repair_Model_dddd.pdb, where dddd is a four digit number from 0001 to 9999, depending on the number of mutants to be generated that are listed in the mutant file.
 
-**3. Calculate ΔΔ<i>G</i>**
-3.1 For ΔΔ<i>G</i><sub>stability</sub>, first, calculate the stability score for the reference protein:
+## 3.1 Calculate ΔΔ<i>G</i><sub>stability</sub>
+
+For ΔΔ<i>G</i><sub>stability</sub>, first, calculate the stability score for the reference protein:
   
 $path/EvoEF --command=ComputeStability --pdb=your_Repair.pdb. The total energy is referred to as Δ<i>G</i><sub>stability,ref</sub>.
   
@@ -45,7 +46,9 @@ Then, calculate the stability score for the mutant protein, e.g.:
   
 Finally, ΔΔ<i>G</i><sub>stability</sub><sup>ref->mut</sup> = Δ<i>G</i><sub>stability</sub><sup>mut</sup> - Δ<i>G</i><sub>stability</sub><sup>ref</sup>
 
-3.2 For ΔΔ<i>G</i><sub>bind</sub>, first, calculate the binding interaction score for the reference protein-protein complex:
+## 3.2 Calculate ΔΔ<i>G</i><sub>bind</sub>
+  
+For ΔΔ<i>G</i><sub>bind</sub>, first, calculate the binding interaction score for the reference protein-protein complex:
 
 $path/EvoEF --command=ComputeBinding --pdb=your_Repair.pdb. The binding energy is referred to as Δ<i>G</i><sub>bind,ref</sub>.
 
