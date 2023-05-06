@@ -1,9 +1,9 @@
-# Introduction to EvoEF
+# Introduction
 EvoEF is an abbreviated name of the **Evo**Design physcics-base **E**nergy **F**unction. EvoDesign is a de novo protein design method developed by the Yang Zhang Lab at the University of Michigan. The evolutionary profile- and physics-based potential is used for protein design scoring. In the earlier version of EvoDesign, FoldX is used to compute the physical energy. Since physical energy is significant in modeling atomic-level interactions, it plays important role in protein-protein interaction design. To improve the computational accuracy and speed of EvoDesign, we developed EvoEF to replace FoldX.
 
 
 # What EvoEF can do?
-The following useful functions are supported by EvoEF:
+EvoEF can do the following calculations given a protein structure in the PDB format:
 
 **ComputeStability**: compute the stability (or total energy) of a protein or protein complex.
 
@@ -15,7 +15,7 @@ The following useful functions are supported by EvoEF:
   
 **OptimizeHydrogen**: optimize hydroxyl hydrogens for Ser, Thr, and Tyr.
 
-**Note that EvoEF works with amino acids/proteins only. It cannot handle nucleotides, DNA, RNA, water, and/or other molecules.**
+**<i>Note that EvoEF works with amino acids/proteins only. It cannot deal with nucleotides, DNA, RNA, water, and/or other molecules.</i>**
 
 # Usage
 EvoEF is most widely used to calculate the thermodynamic change (ΔΔ<i>G</i><sub>bind</sub> and ΔΔ<i>G</i><sub>stability</sub>) caused by amino acid mutations. ΔΔ<i>G</i><sub>stability</sub> is an indicator of measures protein stability change upon mutation(s), and ΔΔ<i>G</i><sub>bind</sub> is an indicator of the binding affinity change of protein-protein interaction upon mutation(s), where a negative Δ<i>G</i> value indicates favorable energy change.
@@ -24,13 +24,13 @@ The following steps are suggested for calculating ΔΔ<i>G</i>:
 
 ## 1. Repair your structure
 
-<i> $path/EvoEF --command=RepairStructure --pdb=your.pdb </i>
+$path/EvoEF --command=RepairStructure --pdb=your.pdb
   
-Running this command successfully will generate a model named your_Repair.pdb
+Running this command successfully will generate a model named "your_Repair.pdb".
 
 ## 2. Build mutant
 
-<i> $path/EvoEF --command=BuildMutant --pdb=your_Repair.pdb --mutant_file=individual_list.txt </i>
+$path/EvoEF --command=BuildMutant --pdb=your_Repair.pdb --mutant_file=individual_list.txt
   
 Running this command will generate a panel of models named as your_Repair_Model_dddd.pdb, where dddd is a four digit number from 0001 to 9999, depending on the number of mutants to be generated that are listed in the mutant file.
 
@@ -77,13 +77,13 @@ $path/EvoEF --command=ComputeBinding --pdb=complex.pdb
 
 $path/EvoEF --command=ComputeBinding --split=A,BC --pdb=complex.pdb
 
-user should specify how to split chains into two parts for ComputeBinding. Otherwise EvoEF will compute and show the interaction energy between any pair of chains.
+User should specify how to split chains into two parts for "ComputeBinding". Otherwise, EvoEF will compute the interaction energy between any pair of chains.
 
 ## RepairStructure
 
 $path/EvoEF --command=RepairStructure --pdb=your.pdb --num_of_runs=3
 
-Running this command will create a new structure model named "your_Repair.pdb" in the current directory. The option "--number_of_runs=3" specify the number of repeated times of repairing/optimizing the structure sequentially (default number: 3).
+Running this command will create a new structure model named "your_Repair.pdb" in the current directory. The option "--number_of_runs" specify the number of repeated times of repairing/optimizing the structure sequentially (default: 3).
 
 ## BuildMutant
 
@@ -93,13 +93,13 @@ Here, the "individual_list.txt" file shows the mutants that you want to build. I
 
 CA171A,DB180E;
 
-Each mutant is written in one line ending with “;”, and multiple mutations in a mutant are divided by “,”. Note that there is no gap or space character between single mutations. For each single mutation, the first letter is the reference amino acid, the second letter is the chain identifier of the amino acid followed by its position in the chain, and the last letter is the amino acid after mutation. Running the command successfully should generate a new structure file named “your_Model_1.pdb”. The option "--number_of_runs=10" specify the number of repeated times of optimizing the rotamers of the mutated and surrounding residues sequentially (default number: 10). 
+Each mutant is written in one line ending with “;”, and multiple mutations in a mutant are divided by “,”. Note that there is no gap or space character between single mutations. For each single mutation, the first letter is the reference amino acid, the second letter is the chain identifier of the amino acid followed by its position in the chain, and the last letter is the amino acid after mutation. Running the command successfully should generate a new structure file named “your_Model_1.pdb”. The option "--number_of_runs" specify the number of repeated times of optimizing the rotamers of the mutated and surrounding residues sequentially (default: 10). 
 
 ## OptimizeHydrogen
 
 $path/EvoEF --command=OptimizeHydrogen --pdb=your.pdb --num_of_runs=3
 
-Running this command successfully will create a file named "your_OptH.pdb" in the current directory. The option "--number_of_runs=3" specify the number of repeated times of optimizing the locations of Ser/Thr/Tyr hydroxyl hydrogens and Asn/Gln/His sidechain polar hydrogens (default number: 3).
+Running this command successfully will create a file named "your_OptH.pdb" in the current directory. The option "--number_of_runs" specify the number of repeated times of optimizing the locations of Ser/Thr/Tyr hydroxyl hydrogens (default: 3).
 
 ## To show EvoEF usage:
 
