@@ -101,7 +101,7 @@ $path/EvoEF --command=ComputeBinding --pdb=your_Repair_Model_0001.pdb
 If the protein complex has more than chains, you can use the "split" option to divide it into two parts before calculating the binding energy (see below).
 
 # COPYRIGHT & CONTACT
-Copyright (c) 2019 Xiaoqiang Huang. EvoEF is free to academic users. For suggestions, please contact xiaoqiah@umich.edu or xiaoqiah@outlook.com.
+Copyright (c) Xiaoqiang Huang. EvoEF is free to academic users. For suggestions, please contact xiaoqiah@umich.edu or xiaoqiah@outlook.com.
 
 # REFERENCE
 Pearce R, Huang X, Setiawan D, Zhang Y. EvoDesign: Designing Protein–Protein Binding Interactions Using Evolutionary Interface Profiles in Conjunction with an Optimized Physical Energy Function. Journal of Molecular Biology (2019) 431: 2467-2476.
