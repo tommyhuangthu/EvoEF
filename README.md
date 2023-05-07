@@ -27,7 +27,7 @@ User should specify how to split chains into two parts for "ComputeBinding". Oth
 
 **RepairStructure** repairs incomplete side chains of a protein. The side chains will be optimized to reduce steric clashes at the best. The hydroxyl hydrogens of Ser, Thr, and Tyr are optimized. Side-chain groups of His, Asn, and Gln may be flipped for optimizing hydrogen-bonding networks.
 
-$path/EvoEF --command=RepairStructure --pdb=your.pdb --num_of_runs=3
+$path/EvoEF --command=RepairStructure --pdb=your.pdb [--num_of_runs=3]
 
 Running this command will create a new structure model named "your_Repair.pdb" in the current directory. The option "--number_of_runs" specify the number of repeated times of repairing/optimizing the structure sequentially (default: 3).
 
@@ -35,7 +35,7 @@ Running this command will create a new structure model named "your_Repair.pdb" i
 
 **BuildMutant** builds mutant model.
 
-$path/EvoEF --command=BuildMutant --pdb=your.pdb --mutant_file=individual_list.txt  --num_of_runs=10 
+$path/EvoEF --command=BuildMutant --pdb=your.pdb --mutant_file=individual_list.txt  [--num_of_runs=10] 
 
 Here, the "individual_list.txt" file shows the mutants that you want to build. It has the following format:
 
@@ -47,7 +47,7 @@ Each mutant is written in one line ending with “;”, and multiple mutations i
 
 **OptimizeHydrogen** optimizes hydroxyl hydrogens for Ser, Thr, and Tyr.
 
-$path/EvoEF --command=OptimizeHydrogen --pdb=your.pdb --num_of_runs=3
+$path/EvoEF --command=OptimizeHydrogen --pdb=your.pdb [--num_of_runs=3]
 
 Running this command successfully will create a file named "your_OptH.pdb" in the current directory. The option "--number_of_runs" specify the number of repeated times of optimizing the locations of Ser/Thr/Tyr hydroxyl hydrogens (default: 3).
 
